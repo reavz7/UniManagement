@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,7 @@ namespace UniManagement
 {
     public partial class Form1 : Form
     {
+        private string connectionString = "Data Source=DESKTOP-D705V9A;Initial Catalog=StudentManagement;Integrated Security=True;Encrypt=False";
         public Form1()
         {
             InitializeComponent();  
@@ -23,9 +25,53 @@ namespace UniManagement
             this.studenciTableAdapter1.Fill(this.studentManagementDataSet.Studenci);
             // TODO: Ten wiersz kodu wczytuje dane do tabeli 'studentManagementDataSet1.Studenci' . Możesz go przenieść lub usunąć.
             this.studenciTableAdapter.Fill(this.studentManagementDataSet1.Studenci);
-
+            LoadSpecializations();
         }
+        private void LoadSpecializations()
+        {
+            try
+            {
+                // Połączenie z bazą danych
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
 
+                    // Zapytanie SQL
+                    string query = "SELECT SpecjalizacjaID, NazwaSpecjalizacji FROM Specjalizacje";
+
+                    // Tworzenie obiektu SqlDataAdapter
+                    SqlDataAdapter dataAdapter = new SqlDataAdapter(query, connection);
+
+                    // Tworzenie DataSet i załadowanie danych
+                    DataSet dataSet = new DataSet();
+                    dataAdapter.Fill(dataSet, "Specjalizacje");
+
+                    // Ustawianie źródła danych dla ComboBox
+                    DataTable specTable = dataSet.Tables["Specjalizacje"];
+
+                    // Ustawienie BindingSource dla ComboBox
+                    BindingSource bindingSource = new BindingSource();
+                    bindingSource.DataSource = specTable;
+
+                    // Wypełnianie ComboBox'ów danymi
+                    comboBoxSpecialization1.DataSource = bindingSource;
+                    comboBoxSpecialization1.DisplayMember = "NazwaSpecjalizacji";
+                    comboBoxSpecialization1.ValueMember = "SpecjalizacjaID";
+
+                    comboBoxSpecialization2.DataSource = bindingSource;
+                    comboBoxSpecialization2.DisplayMember = "NazwaSpecjalizacji";
+                    comboBoxSpecialization2.ValueMember = "SpecjalizacjaID";
+
+                    comboBoxSpecialization3.DataSource = bindingSource;
+                    comboBoxSpecialization3.DisplayMember = "NazwaSpecjalizacji";
+                    comboBoxSpecialization3.ValueMember = "SpecjalizacjaID";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Błąd podczas ładowania specjalizacji: " + ex.Message);
+            }
+        }
         private void panel2_Paint(object sender, PaintEventArgs e)
         {
 

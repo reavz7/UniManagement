@@ -65,11 +65,11 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBoxName = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDownAlbumNumber = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.textBoxSurname = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.comboBoxSpecialization1 = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -91,7 +91,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.bindingNavigator1)).BeginInit();
             this.bindingNavigator1.SuspendLayout();
             this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownAlbumNumber)).BeginInit();
             this.tabPage2.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -368,11 +368,11 @@
             // 
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Controls.Add(this.textBox1);
+            this.groupBox1.Controls.Add(this.textBoxName);
             this.groupBox1.Controls.Add(this.label5);
-            this.groupBox1.Controls.Add(this.numericUpDown1);
+            this.groupBox1.Controls.Add(this.numericUpDownAlbumNumber);
             this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Controls.Add(this.textBox2);
+            this.groupBox1.Controls.Add(this.textBoxSurname);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.comboBoxSpecialization1);
             this.groupBox1.Controls.Add(this.label2);
@@ -403,12 +403,12 @@
             this.label6.TabIndex = 11;
             this.label6.Text = "Trzeci wybór";
             // 
-            // textBox1
+            // textBoxName
             // 
-            this.textBox1.Location = new System.Drawing.Point(180, 34);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(120, 20);
-            this.textBox1.TabIndex = 2;
+            this.textBoxName.Location = new System.Drawing.Point(180, 34);
+            this.textBoxName.Name = "textBoxName";
+            this.textBoxName.Size = new System.Drawing.Size(120, 20);
+            this.textBoxName.TabIndex = 2;
             // 
             // label5
             // 
@@ -419,12 +419,12 @@
             this.label5.TabIndex = 11;
             this.label5.Text = "Drugi wybór";
             // 
-            // numericUpDown1
+            // numericUpDownAlbumNumber
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(180, 113);
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(120, 20);
-            this.numericUpDown1.TabIndex = 3;
+            this.numericUpDownAlbumNumber.Location = new System.Drawing.Point(180, 113);
+            this.numericUpDownAlbumNumber.Name = "numericUpDownAlbumNumber";
+            this.numericUpDownAlbumNumber.Size = new System.Drawing.Size(120, 20);
+            this.numericUpDownAlbumNumber.TabIndex = 3;
             // 
             // label4
             // 
@@ -435,12 +435,12 @@
             this.label4.TabIndex = 11;
             this.label4.Text = "Pierwszy wybór";
             // 
-            // textBox2
+            // textBoxSurname
             // 
-            this.textBox2.Location = new System.Drawing.Point(180, 72);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(120, 20);
-            this.textBox2.TabIndex = 4;
+            this.textBoxSurname.Location = new System.Drawing.Point(180, 72);
+            this.textBoxSurname.Name = "textBoxSurname";
+            this.textBoxSurname.Size = new System.Drawing.Size(120, 20);
+            this.textBoxSurname.TabIndex = 4;
             // 
             // label3
             // 
@@ -563,7 +563,7 @@
             this.bindingNavigator1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownAlbumNumber)).EndInit();
             this.tabPage2.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -603,9 +603,9 @@
         private System.Windows.Forms.ComboBox comboBoxSpecialization3;
         private System.Windows.Forms.ComboBox comboBoxSpecialization2;
         private System.Windows.Forms.ComboBox comboBoxSpecialization1;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBoxSurname;
+        private System.Windows.Forms.NumericUpDown numericUpDownAlbumNumber;
+        private System.Windows.Forms.TextBox textBoxName;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.BindingNavigator bindingNavigator1;
