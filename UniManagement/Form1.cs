@@ -15,11 +15,14 @@ namespace UniManagement
         public Form1()
         {
             InitializeComponent();
-            studentManagement1.BringToFront();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            // TODO: Ten wiersz kodu wczytuje dane do tabeli 'studentManagementDataSet.Studenci' . Możesz go przenieść lub usunąć.
+            this.studenciTableAdapter1.Fill(this.studentManagementDataSet.Studenci);
+            // TODO: Ten wiersz kodu wczytuje dane do tabeli 'studentManagementDataSet1.Studenci' . Możesz go przenieść lub usunąć.
+            this.studenciTableAdapter.Fill(this.studentManagementDataSet1.Studenci);
 
         }
 
@@ -30,18 +33,15 @@ namespace UniManagement
 
         private void button1_Click(object sender, EventArgs e)
         {
-            studentManagement1.BringToFront();
 
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            studentGrades1.BringToFront();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            sortStudents1.BringToFront();
         }
 
         private void sortStudents1_Load(object sender, EventArgs e)

@@ -35,6 +35,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.SqlClient, Version=4.6.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SqlClient.4.9.0\lib\net462\System.Data.SqlClient.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -54,23 +57,15 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SortStudents.cs">
-      <SubType>UserControl</SubType>
+    <Compile Include="StudentManagementDataSet.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>StudentManagementDataSet.xsd</DependentUpon>
     </Compile>
-    <Compile Include="SortStudents.Designer.cs">
-      <DependentUpon>SortStudents.cs</DependentUpon>
-    </Compile>
-    <Compile Include="StudentGrades.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="StudentGrades.Designer.cs">
-      <DependentUpon>StudentGrades.cs</DependentUpon>
-    </Compile>
-    <Compile Include="StudentManagement.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="StudentManagement.Designer.cs">
-      <DependentUpon>StudentManagement.cs</DependentUpon>
+    <Compile Include="StudentManagementDataSet1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>StudentManagementDataSet1.xsd</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
@@ -85,15 +80,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="SortStudents.resx">
-      <DependentUpon>SortStudents.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="StudentGrades.resx">
-      <DependentUpon>StudentGrades.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="StudentManagement.resx">
-      <DependentUpon>StudentManagement.cs</DependentUpon>
-    </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -103,6 +90,28 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="StudentManagementDataSet.xsc">
+      <DependentUpon>StudentManagementDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="StudentManagementDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>StudentManagementDataSet.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="StudentManagementDataSet.xss">
+      <DependentUpon>StudentManagementDataSet.xsd</DependentUpon>
+    </None>
+    <None Include="StudentManagementDataSet1.xsc">
+      <DependentUpon>StudentManagementDataSet1.xsd</DependentUpon>
+    </None>
+    <None Include="StudentManagementDataSet1.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>StudentManagementDataSet1.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="StudentManagementDataSet1.xss">
+      <DependentUpon>StudentManagementDataSet1.xsd</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
