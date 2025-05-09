@@ -30,10 +30,14 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.studentManagementDataSet1 = new UniManagement.StudentManagementDataSet1();
             this.studenciBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.studenciTableAdapter = new UniManagement.StudentManagementDataSet1TableAdapters.StudenciTableAdapter();
             this.tableAdapterManager = new UniManagement.StudentManagementDataSet1TableAdapters.TableAdapterManager();
+            this.ocenyStudentowTableAdapter = new UniManagement.StudentManagementDataSet1TableAdapters.OcenyStudentowTableAdapter();
+            this.specjalizacjeTableAdapter = new UniManagement.StudentManagementDataSet1TableAdapters.SpecjalizacjeTableAdapter();
             this.studentsDataGridView = new System.Windows.Forms.DataGridView();
             this.studentIDDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.numerAlbumuDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -47,6 +51,7 @@
             this.studentManagementDataSet = new UniManagement.StudentManagementDataSet();
             this.studenciTableAdapter1 = new UniManagement.StudentManagementDataSetTableAdapters.StudenciTableAdapter();
             this.tableAdapterManager1 = new UniManagement.StudentManagementDataSetTableAdapters.TableAdapterManager();
+            this.przedmiotyTableAdapter = new UniManagement.StudentManagementDataSetTableAdapters.PrzedmiotyTableAdapter();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.bindingNavigator1 = new System.Windows.Forms.BindingNavigator(this.components);
@@ -83,7 +88,21 @@
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.button1 = new System.Windows.Forms.Button();
+            this.pnlStudentSelection = new System.Windows.Forms.Panel();
+            this.lblStudentSelectionGrades = new System.Windows.Forms.Label();
+            this.cmbStudentSelectorGrades = new System.Windows.Forms.ComboBox();
+            this.studenciBindingSourceForGradesTab = new System.Windows.Forms.BindingSource(this.components);
+            this.pnlGradeActions = new System.Windows.Forms.Panel();
+            this.btnAddGrade = new System.Windows.Forms.Button();
+            this.btnDeleteGrade = new System.Windows.Forms.Button();
+            this.btnSaveGrades = new System.Windows.Forms.Button();
+            this.dgvStudentGrades = new System.Windows.Forms.DataGridView();
+            this.colOcenaID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colStudentIDGrades = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colPrzedmiotIDGrades = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.przedmiotyBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.colWartoscOcenyGrades = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ocenyStudentaFilteredBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.tcAssignmentResults = new System.Windows.Forms.TabControl();
             this.tpUnassignedStudents = new System.Windows.Forms.TabPage();
@@ -105,12 +124,8 @@
             this.btnAssignStep1 = new System.Windows.Forms.Button();
             this.btnAssignStep2Redistribute = new System.Windows.Forms.Button();
             this.btnConfirmAssignments = new System.Windows.Forms.Button();
-            this.przedmiotyBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.przedmiotyTableAdapter = new UniManagement.StudentManagementDataSetTableAdapters.PrzedmiotyTableAdapter();
             this.ocenyStudentowBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.ocenyStudentowTableAdapter = new UniManagement.StudentManagementDataSet1TableAdapters.OcenyStudentowTableAdapter();
             this.specjalizacjeBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.specjalizacjeTableAdapter = new UniManagement.StudentManagementDataSet1TableAdapters.SpecjalizacjeTableAdapter();
             ((System.ComponentModel.ISupportInitialize)(this.studentManagementDataSet1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.studenciBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.studentsDataGridView)).BeginInit();
@@ -123,6 +138,12 @@
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownAlbumNumber)).BeginInit();
             this.tabPage2.SuspendLayout();
+            this.pnlStudentSelection.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.studenciBindingSourceForGradesTab)).BeginInit();
+            this.pnlGradeActions.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvStudentGrades)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.przedmiotyBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ocenyStudentaFilteredBindingSource)).BeginInit();
             this.tabPage3.SuspendLayout();
             this.tcAssignmentResults.SuspendLayout();
             this.tpUnassignedStudents.SuspendLayout();
@@ -131,7 +152,6 @@
             this.tpGroupsPreview.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvGroupsPreview)).BeginInit();
             this.pnlAssignmentControls.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.przedmiotyBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ocenyStudentowBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.specjalizacjeBindingSource)).BeginInit();
             this.SuspendLayout();
@@ -153,12 +173,20 @@
             // tableAdapterManager
             // 
             this.tableAdapterManager.BackupDataSetBeforeUpdate = false;
-            this.tableAdapterManager.OcenyStudentowTableAdapter = null;
+            this.tableAdapterManager.OcenyStudentowTableAdapter = this.ocenyStudentowTableAdapter;
             this.tableAdapterManager.PreferencjeStudentowTableAdapter = null;
             this.tableAdapterManager.PrzedmiotyTableAdapter = null;
-            this.tableAdapterManager.SpecjalizacjeTableAdapter = null;
+            this.tableAdapterManager.SpecjalizacjeTableAdapter = this.specjalizacjeTableAdapter;
             this.tableAdapterManager.StudenciTableAdapter = this.studenciTableAdapter;
             this.tableAdapterManager.UpdateOrder = UniManagement.StudentManagementDataSet1TableAdapters.TableAdapterManager.UpdateOrderOption.InsertUpdateDelete;
+            // 
+            // ocenyStudentowTableAdapter
+            // 
+            this.ocenyStudentowTableAdapter.ClearBeforeFill = true;
+            // 
+            // specjalizacjeTableAdapter
+            // 
+            this.specjalizacjeTableAdapter.ClearBeforeFill = true;
             // 
             // studentsDataGridView
             // 
@@ -265,10 +293,14 @@
             this.tableAdapterManager1.BackupDataSetBeforeUpdate = false;
             this.tableAdapterManager1.OcenyStudentowTableAdapter = null;
             this.tableAdapterManager1.PreferencjeStudentowTableAdapter = null;
-            this.tableAdapterManager1.PrzedmiotyTableAdapter = null;
+            this.tableAdapterManager1.PrzedmiotyTableAdapter = this.przedmiotyTableAdapter;
             this.tableAdapterManager1.SpecjalizacjeTableAdapter = null;
             this.tableAdapterManager1.StudenciTableAdapter = this.studenciTableAdapter1;
             this.tableAdapterManager1.UpdateOrder = UniManagement.StudentManagementDataSetTableAdapters.TableAdapterManager.UpdateOrderOption.InsertUpdateDelete;
+            // 
+            // przedmiotyTableAdapter
+            // 
+            this.przedmiotyTableAdapter.ClearBeforeFill = true;
             // 
             // tabControl1
             // 
@@ -640,25 +672,178 @@
             // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.button1);
+            this.tabPage2.Controls.Add(this.dgvStudentGrades);
+            this.tabPage2.Controls.Add(this.pnlGradeActions);
+            this.tabPage2.Controls.Add(this.pnlStudentSelection);
             this.tabPage2.Location = new System.Drawing.Point(4, 25);
             this.tabPage2.Margin = new System.Windows.Forms.Padding(4);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(4);
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(10);
             this.tabPage2.Size = new System.Drawing.Size(1412, 690);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Oceny studentów";
+            this.tabPage2.Text = "Oceny Studentów";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // pnlStudentSelection
             // 
-            this.button1.Location = new System.Drawing.Point(148, 47);
-            this.button1.Margin = new System.Windows.Forms.Padding(4);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(873, 418);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "PIZDA!!!";
-            this.button1.UseVisualStyleBackColor = true;
+            this.pnlStudentSelection.Controls.Add(this.lblStudentSelectionGrades);
+            this.pnlStudentSelection.Controls.Add(this.cmbStudentSelectorGrades);
+            this.pnlStudentSelection.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlStudentSelection.Location = new System.Drawing.Point(10, 10);
+            this.pnlStudentSelection.Name = "pnlStudentSelection";
+            this.pnlStudentSelection.Size = new System.Drawing.Size(1392, 40);
+            this.pnlStudentSelection.TabIndex = 0;
+            // 
+            // lblStudentSelectionGrades
+            // 
+            this.lblStudentSelectionGrades.AutoSize = true;
+            this.lblStudentSelectionGrades.Location = new System.Drawing.Point(3, 11);
+            this.lblStudentSelectionGrades.Name = "lblStudentSelectionGrades";
+            this.lblStudentSelectionGrades.Size = new System.Drawing.Size(118, 16);
+            this.lblStudentSelectionGrades.TabIndex = 0;
+            this.lblStudentSelectionGrades.Text = "Wybierz studenta:";
+            // 
+            // cmbStudentSelectorGrades
+            // 
+            this.cmbStudentSelectorGrades.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cmbStudentSelectorGrades.DataSource = this.studenciBindingSourceForGradesTab;
+            this.cmbStudentSelectorGrades.DisplayMember = "PelneNazwisko"; // Upewnij się, że ta właściwość istnieje lub zmień na np. "Nazwisko"
+            this.cmbStudentSelectorGrades.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbStudentSelectorGrades.FormattingEnabled = true;
+            this.cmbStudentSelectorGrades.Location = new System.Drawing.Point(130, 8);
+            this.cmbStudentSelectorGrades.Name = "cmbStudentSelectorGrades";
+            this.cmbStudentSelectorGrades.Size = new System.Drawing.Size(1259, 24);
+            this.cmbStudentSelectorGrades.TabIndex = 1;
+            this.cmbStudentSelectorGrades.ValueMember = "StudentID";
+            // 
+            // studenciBindingSourceForGradesTab
+            // 
+            this.studenciBindingSourceForGradesTab.DataMember = "Studenci";
+            this.studenciBindingSourceForGradesTab.DataSource = this.studentManagementDataSet1;
+            // 
+            // pnlGradeActions
+            // 
+            this.pnlGradeActions.Controls.Add(this.btnAddGrade);
+            this.pnlGradeActions.Controls.Add(this.btnDeleteGrade);
+            this.pnlGradeActions.Controls.Add(this.btnSaveGrades);
+            this.pnlGradeActions.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlGradeActions.Location = new System.Drawing.Point(10, 50);
+            this.pnlGradeActions.Name = "pnlGradeActions";
+            this.pnlGradeActions.Padding = new System.Windows.Forms.Padding(0, 5, 0, 5);
+            this.pnlGradeActions.Size = new System.Drawing.Size(1392, 45);
+            this.pnlGradeActions.TabIndex = 1;
+            // 
+            // btnAddGrade
+            // 
+            this.btnAddGrade.Location = new System.Drawing.Point(3, 8);
+            this.btnAddGrade.Name = "btnAddGrade";
+            this.btnAddGrade.Size = new System.Drawing.Size(130, 30);
+            this.btnAddGrade.TabIndex = 0;
+            this.btnAddGrade.Text = "Dodaj Ocenę";
+            this.btnAddGrade.UseVisualStyleBackColor = true;
+            // 
+            // btnDeleteGrade
+            // 
+            this.btnDeleteGrade.Location = new System.Drawing.Point(139, 8);
+            this.btnDeleteGrade.Name = "btnDeleteGrade";
+            this.btnDeleteGrade.Size = new System.Drawing.Size(130, 30);
+            this.btnDeleteGrade.TabIndex = 1;
+            this.btnDeleteGrade.Text = "Usuń Ocenę";
+            this.btnDeleteGrade.UseVisualStyleBackColor = true;
+            // 
+            // btnSaveGrades
+            // 
+            this.btnSaveGrades.Location = new System.Drawing.Point(275, 8);
+            this.btnSaveGrades.Name = "btnSaveGrades";
+            this.btnSaveGrades.Size = new System.Drawing.Size(130, 30);
+            this.btnSaveGrades.TabIndex = 2;
+            this.btnSaveGrades.Text = "Zapisz Zmiany";
+            this.btnSaveGrades.UseVisualStyleBackColor = true;
+            // 
+            // dgvStudentGrades
+            // 
+            this.dgvStudentGrades.AllowUserToAddRows = false;
+            this.dgvStudentGrades.AllowUserToDeleteRows = false;
+            this.dgvStudentGrades.AllowUserToOrderColumns = true;
+            this.dgvStudentGrades.AllowUserToResizeRows = false;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            this.dgvStudentGrades.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            this.dgvStudentGrades.AutoGenerateColumns = false;
+            this.dgvStudentGrades.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvStudentGrades.BackgroundColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.ControlLight;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvStudentGrades.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            this.dgvStudentGrades.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvStudentGrades.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.colOcenaID,
+            this.colStudentIDGrades,
+            this.colPrzedmiotIDGrades,
+            this.colWartoscOcenyGrades});
+            this.dgvStudentGrades.DataSource = this.ocenyStudentaFilteredBindingSource;
+            this.dgvStudentGrades.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvStudentGrades.Location = new System.Drawing.Point(10, 95);
+            this.dgvStudentGrades.MultiSelect = false;
+            this.dgvStudentGrades.Name = "dgvStudentGrades";
+            this.dgvStudentGrades.RowHeadersVisible = false;
+            this.dgvStudentGrades.RowHeadersWidth = 51;
+            this.dgvStudentGrades.RowTemplate.Height = 24;
+            this.dgvStudentGrades.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvStudentGrades.Size = new System.Drawing.Size(1392, 585);
+            this.dgvStudentGrades.TabIndex = 2;
+            // 
+            // colOcenaID
+            // 
+            this.colOcenaID.DataPropertyName = "OcenaID";
+            this.colOcenaID.HeaderText = "ID Oceny";
+            this.colOcenaID.MinimumWidth = 6;
+            this.colOcenaID.Name = "colOcenaID";
+            this.colOcenaID.ReadOnly = true;
+            this.colOcenaID.Visible = false;
+            // 
+            // colStudentIDGrades
+            // 
+            this.colStudentIDGrades.DataPropertyName = "StudentID";
+            this.colStudentIDGrades.HeaderText = "ID Studenta";
+            this.colStudentIDGrades.MinimumWidth = 6;
+            this.colStudentIDGrades.Name = "colStudentIDGrades";
+            this.colStudentIDGrades.ReadOnly = true;
+            this.colStudentIDGrades.Visible = false;
+            // 
+            // colPrzedmiotIDGrades
+            // 
+            this.colPrzedmiotIDGrades.DataPropertyName = "PrzedmiotID";
+            this.colPrzedmiotIDGrades.DataSource = this.przedmiotyBindingSource;
+            this.colPrzedmiotIDGrades.DisplayMember = "NazwaPrzedmiotu"; // Upewnij się, że ta kolumna istnieje w tabeli Przedmioty
+            this.colPrzedmiotIDGrades.DisplayStyle = System.Windows.Forms.DataGridViewComboBoxDisplayStyle.Nothing;
+            this.colPrzedmiotIDGrades.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.colPrzedmiotIDGrades.HeaderText = "Przedmiot";
+            this.colPrzedmiotIDGrades.MinimumWidth = 6;
+            this.colPrzedmiotIDGrades.Name = "colPrzedmiotIDGrades";
+            this.colPrzedmiotIDGrades.ValueMember = "PrzedmiotID"; // Upewnij się, że ta kolumna istnieje w tabeli Przedmioty
+            // 
+            // przedmiotyBindingSource
+            // 
+            this.przedmiotyBindingSource.DataMember = "Przedmioty";
+            this.przedmiotyBindingSource.DataSource = this.studentManagementDataSet;
+            // 
+            // colWartoscOcenyGrades
+            // 
+            this.colWartoscOcenyGrades.DataPropertyName = "WartoscOceny";
+            this.colWartoscOcenyGrades.HeaderText = "Ocena";
+            this.colWartoscOcenyGrades.MinimumWidth = 6;
+            this.colWartoscOcenyGrades.Name = "colWartoscOcenyGrades";
+            // 
+            // ocenyStudentaFilteredBindingSource
+            // 
+            this.ocenyStudentaFilteredBindingSource.DataMember = "OcenyStudentow";
+            this.ocenyStudentaFilteredBindingSource.DataSource = this.studentManagementDataSet1;
             // 
             // tabPage3
             // 
@@ -888,32 +1073,15 @@
             this.btnConfirmAssignments.Text = "Zatwierdź i Zapisz Przydziały";
             this.btnConfirmAssignments.UseVisualStyleBackColor = true;
             // 
-            // przedmiotyBindingSource
-            // 
-            this.przedmiotyBindingSource.DataMember = "Przedmioty";
-            this.przedmiotyBindingSource.DataSource = this.studentManagementDataSet;
-            // 
-            // przedmiotyTableAdapter
-            // 
-            this.przedmiotyTableAdapter.ClearBeforeFill = true;
-            // 
             // ocenyStudentowBindingSource
             // 
             this.ocenyStudentowBindingSource.DataMember = "OcenyStudentow";
             this.ocenyStudentowBindingSource.DataSource = this.studentManagementDataSet1;
             // 
-            // ocenyStudentowTableAdapter
-            // 
-            this.ocenyStudentowTableAdapter.ClearBeforeFill = true;
-            // 
             // specjalizacjeBindingSource
             // 
             this.specjalizacjeBindingSource.DataMember = "Specjalizacje";
             this.specjalizacjeBindingSource.DataSource = this.studentManagementDataSet1;
-            // 
-            // specjalizacjeTableAdapter
-            // 
-            this.specjalizacjeTableAdapter.ClearBeforeFill = true;
             // 
             // Form1
             // 
@@ -940,6 +1108,13 @@
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownAlbumNumber)).EndInit();
             this.tabPage2.ResumeLayout(false);
+            this.pnlStudentSelection.ResumeLayout(false);
+            this.pnlStudentSelection.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.studenciBindingSourceForGradesTab)).EndInit();
+            this.pnlGradeActions.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvStudentGrades)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.przedmiotyBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ocenyStudentaFilteredBindingSource)).EndInit();
             this.tabPage3.ResumeLayout(false);
             this.tcAssignmentResults.ResumeLayout(false);
             this.tpUnassignedStudents.ResumeLayout(false);
@@ -950,7 +1125,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvGroupsPreview)).EndInit();
             this.pnlAssignmentControls.ResumeLayout(false);
             this.pnlAssignmentControls.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.przedmiotyBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ocenyStudentowBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.specjalizacjeBindingSource)).EndInit();
             this.ResumeLayout(false);
@@ -970,7 +1144,7 @@
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.Button button1;
+        // private System.Windows.Forms.Button button1; // Usunięte
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
@@ -1020,12 +1194,29 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn sredniaOcenKwalifikacyjnaDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn statusKwalifikacjiDataGridViewTextBoxColumn;
 
-        // --- DEKLARACJE NOWYCH KONTROLEK (umieść je tutaj) ---
+        // --- DEKLARACJE NOWYCH KONTROLEK DLA tabPage2 ---
+        private System.Windows.Forms.Panel pnlStudentSelection;
+        private System.Windows.Forms.Label lblStudentSelectionGrades;
+        private System.Windows.Forms.ComboBox cmbStudentSelectorGrades;
+        private System.Windows.Forms.Panel pnlGradeActions;
+        private System.Windows.Forms.Button btnAddGrade;
+        private System.Windows.Forms.Button btnDeleteGrade;
+        private System.Windows.Forms.Button btnSaveGrades;
+        private System.Windows.Forms.DataGridView dgvStudentGrades;
+        private System.Windows.Forms.BindingSource studenciBindingSourceForGradesTab;
+        private System.Windows.Forms.BindingSource ocenyStudentaFilteredBindingSource;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colOcenaID;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colStudentIDGrades;
+        private System.Windows.Forms.DataGridViewComboBoxColumn colPrzedmiotIDGrades;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colWartoscOcenyGrades;
+        // --- KONIEC DEKLARACJI NOWYCH KONTROLEK DLA tabPage2 ---
+
+        // --- DEKLARACJE KONTROLEK DLA tabPage3 (istniejące) ---
         private System.Windows.Forms.Panel pnlAssignmentControls;
         private System.Windows.Forms.Button btnLoadDataForAssignment;
-        private System.Windows.Forms.Button btnAssignStep1; // Dawny button5
-        private System.Windows.Forms.Button btnAssignStep2Redistribute; // Dawny button6
-        private System.Windows.Forms.Button btnConfirmAssignments; // Dawny button7
+        private System.Windows.Forms.Button btnAssignStep1;
+        private System.Windows.Forms.Button btnAssignStep2Redistribute;
+        private System.Windows.Forms.Button btnConfirmAssignments;
         private System.Windows.Forms.Label lblInfoStudentsToProcess;
         private System.Windows.Forms.Label lblStudentsToProcessCount;
         private System.Windows.Forms.Label lblInfoAssignedStep1;
@@ -1036,11 +1227,11 @@
         private System.Windows.Forms.Label lblStudentsStillUnassignedCount;
         private System.Windows.Forms.TabControl tcAssignmentResults;
         private System.Windows.Forms.TabPage tpUnassignedStudents;
-        private System.Windows.Forms.DataGridView dgvUnassignedStudents; // Dawny dataGridView1
+        private System.Windows.Forms.DataGridView dgvUnassignedStudents;
         private System.Windows.Forms.TabPage tpAssignmentLog;
         private System.Windows.Forms.TextBox txtAssignmentLog;
         private System.Windows.Forms.TabPage tpGroupsPreview;
         private System.Windows.Forms.DataGridView dgvGroupsPreview;
-        // --- KONIEC DEKLARACJI NOWYCH KONTROLEK ---
+        // --- KONIEC DEKLARACJI KONTROLEK DLA tabPage3 ---
     }
 }
