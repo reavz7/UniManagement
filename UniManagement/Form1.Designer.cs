@@ -35,14 +35,6 @@
             this.studenciTableAdapter = new UniManagement.StudentManagementDataSet1TableAdapters.StudenciTableAdapter();
             this.tableAdapterManager = new UniManagement.StudentManagementDataSet1TableAdapters.TableAdapterManager();
             this.studentsDataGridView = new System.Windows.Forms.DataGridView();
-            this.studentIDDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.numerAlbumuDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.imieDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.nazwiskoDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.emailDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.specjalizacjaIDDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.sredniaOcenKwalifikacyjnaDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.statusKwalifikacjiDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.studentManagementDataSet = new UniManagement.StudentManagementDataSet();
             this.studenciBindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.studenciTableAdapter1 = new UniManagement.StudentManagementDataSetTableAdapters.StudenciTableAdapter();
@@ -52,7 +44,7 @@
             this.bindingNavigator1 = new System.Windows.Forms.BindingNavigator(this.components);
             this.BtnAddStudent = new System.Windows.Forms.ToolStripButton();
             this.bindingNavigatorCountItem = new System.Windows.Forms.ToolStripLabel();
-            this.deleteItem = new System.Windows.Forms.ToolStripButton();
+            this.btnDeleteStudent = new System.Windows.Forms.ToolStripButton();
             this.bindingNavigatorMoveFirstItem = new System.Windows.Forms.ToolStripButton();
             this.bindingNavigatorMovePreviousItem = new System.Windows.Forms.ToolStripButton();
             this.bindingNavigatorSeparator = new System.Windows.Forms.ToolStripSeparator();
@@ -61,8 +53,12 @@
             this.bindingNavigatorMoveNextItem = new System.Windows.Forms.ToolStripButton();
             this.bindingNavigatorMoveLastItem = new System.Windows.Forms.ToolStripButton();
             this.bindingNavigatorSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
+            this.btnUpdateStudent = new System.Windows.Forms.ToolStripButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.comboBoxStatus = new System.Windows.Forms.ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.textBoxEmail = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.textBoxName = new System.Windows.Forms.TextBox();
@@ -81,6 +77,20 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.button1 = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.przedmiotyBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.przedmiotyTableAdapter = new UniManagement.StudentManagementDataSetTableAdapters.PrzedmiotyTableAdapter();
+            this.ocenyStudentowBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.ocenyStudentowTableAdapter = new UniManagement.StudentManagementDataSet1TableAdapters.OcenyStudentowTableAdapter();
+            this.specjalizacjeBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.specjalizacjeTableAdapter = new UniManagement.StudentManagementDataSet1TableAdapters.SpecjalizacjeTableAdapter();
+            this.studentIDDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.numerAlbumuDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.imieDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.nazwiskoDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.emailDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.specjalizacjaIDDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.sredniaOcenKwalifikacyjnaDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.statusKwalifikacjiDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.studentManagementDataSet1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.studenciBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.studentsDataGridView)).BeginInit();
@@ -93,6 +103,9 @@
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownAlbumNumber)).BeginInit();
             this.tabPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.przedmiotyBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ocenyStudentowBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.specjalizacjeBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // studentManagementDataSet1
@@ -132,60 +145,11 @@
             this.specjalizacjaIDDataGridViewTextBoxColumn,
             this.sredniaOcenKwalifikacyjnaDataGridViewTextBoxColumn,
             this.statusKwalifikacjiDataGridViewTextBoxColumn});
-            this.studentsDataGridView.DataSource = this.studenciBindingSource;
+            this.studentsDataGridView.DataSource = this.studenciBindingSource1;
             this.studentsDataGridView.Location = new System.Drawing.Point(485, 45);
             this.studentsDataGridView.Name = "studentsDataGridView";
             this.studentsDataGridView.Size = new System.Drawing.Size(557, 504);
             this.studentsDataGridView.TabIndex = 1;
-            // 
-            // studentIDDataGridViewTextBoxColumn
-            // 
-            this.studentIDDataGridViewTextBoxColumn.DataPropertyName = "StudentID";
-            this.studentIDDataGridViewTextBoxColumn.HeaderText = "StudentID";
-            this.studentIDDataGridViewTextBoxColumn.Name = "studentIDDataGridViewTextBoxColumn";
-            this.studentIDDataGridViewTextBoxColumn.ReadOnly = true;
-            // 
-            // numerAlbumuDataGridViewTextBoxColumn
-            // 
-            this.numerAlbumuDataGridViewTextBoxColumn.DataPropertyName = "NumerAlbumu";
-            this.numerAlbumuDataGridViewTextBoxColumn.HeaderText = "NumerAlbumu";
-            this.numerAlbumuDataGridViewTextBoxColumn.Name = "numerAlbumuDataGridViewTextBoxColumn";
-            // 
-            // imieDataGridViewTextBoxColumn
-            // 
-            this.imieDataGridViewTextBoxColumn.DataPropertyName = "Imie";
-            this.imieDataGridViewTextBoxColumn.HeaderText = "Imie";
-            this.imieDataGridViewTextBoxColumn.Name = "imieDataGridViewTextBoxColumn";
-            // 
-            // nazwiskoDataGridViewTextBoxColumn
-            // 
-            this.nazwiskoDataGridViewTextBoxColumn.DataPropertyName = "Nazwisko";
-            this.nazwiskoDataGridViewTextBoxColumn.HeaderText = "Nazwisko";
-            this.nazwiskoDataGridViewTextBoxColumn.Name = "nazwiskoDataGridViewTextBoxColumn";
-            // 
-            // emailDataGridViewTextBoxColumn
-            // 
-            this.emailDataGridViewTextBoxColumn.DataPropertyName = "Email";
-            this.emailDataGridViewTextBoxColumn.HeaderText = "Email";
-            this.emailDataGridViewTextBoxColumn.Name = "emailDataGridViewTextBoxColumn";
-            // 
-            // specjalizacjaIDDataGridViewTextBoxColumn
-            // 
-            this.specjalizacjaIDDataGridViewTextBoxColumn.DataPropertyName = "SpecjalizacjaID";
-            this.specjalizacjaIDDataGridViewTextBoxColumn.HeaderText = "SpecjalizacjaID";
-            this.specjalizacjaIDDataGridViewTextBoxColumn.Name = "specjalizacjaIDDataGridViewTextBoxColumn";
-            // 
-            // sredniaOcenKwalifikacyjnaDataGridViewTextBoxColumn
-            // 
-            this.sredniaOcenKwalifikacyjnaDataGridViewTextBoxColumn.DataPropertyName = "SredniaOcenKwalifikacyjna";
-            this.sredniaOcenKwalifikacyjnaDataGridViewTextBoxColumn.HeaderText = "SredniaOcenKwalifikacyjna";
-            this.sredniaOcenKwalifikacyjnaDataGridViewTextBoxColumn.Name = "sredniaOcenKwalifikacyjnaDataGridViewTextBoxColumn";
-            // 
-            // statusKwalifikacjiDataGridViewTextBoxColumn
-            // 
-            this.statusKwalifikacjiDataGridViewTextBoxColumn.DataPropertyName = "StatusKwalifikacji";
-            this.statusKwalifikacjiDataGridViewTextBoxColumn.HeaderText = "StatusKwalifikacji";
-            this.statusKwalifikacjiDataGridViewTextBoxColumn.Name = "statusKwalifikacjiDataGridViewTextBoxColumn";
             // 
             // studentManagementDataSet
             // 
@@ -240,10 +204,11 @@
             // 
             // bindingNavigator1
             // 
+            this.bindingNavigator1.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
             this.bindingNavigator1.AddNewItem = this.BtnAddStudent;
             this.bindingNavigator1.BindingSource = this.studenciBindingSource;
             this.bindingNavigator1.CountItem = this.bindingNavigatorCountItem;
-            this.bindingNavigator1.DeleteItem = this.deleteItem;
+            this.bindingNavigator1.DeleteItem = this.btnDeleteStudent;
             this.bindingNavigator1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.bindingNavigatorMoveFirstItem,
             this.bindingNavigatorMovePreviousItem,
@@ -255,8 +220,8 @@
             this.bindingNavigatorMoveLastItem,
             this.bindingNavigatorSeparator2,
             this.BtnAddStudent,
-            this.deleteItem,
-            this.toolStripButton1});
+            this.btnDeleteStudent,
+            this.btnUpdateStudent});
             this.bindingNavigator1.Location = new System.Drawing.Point(3, 3);
             this.bindingNavigator1.MoveFirstItem = this.bindingNavigatorMoveFirstItem;
             this.bindingNavigator1.MoveLastItem = this.bindingNavigatorMoveLastItem;
@@ -285,14 +250,14 @@
             this.bindingNavigatorCountItem.Text = "z {0}";
             this.bindingNavigatorCountItem.ToolTipText = "Suma elementów";
             // 
-            // deleteItem
+            // btnDeleteStudent
             // 
-            this.deleteItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.deleteItem.Image = ((System.Drawing.Image)(resources.GetObject("deleteItem.Image")));
-            this.deleteItem.Name = "deleteItem";
-            this.deleteItem.RightToLeftAutoMirrorImage = true;
-            this.deleteItem.Size = new System.Drawing.Size(23, 22);
-            this.deleteItem.Text = "Usuń";
+            this.btnDeleteStudent.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnDeleteStudent.Image = ((System.Drawing.Image)(resources.GetObject("btnDeleteStudent.Image")));
+            this.btnDeleteStudent.Name = "btnDeleteStudent";
+            this.btnDeleteStudent.RightToLeftAutoMirrorImage = true;
+            this.btnDeleteStudent.Size = new System.Drawing.Size(23, 22);
+            this.btnDeleteStudent.Text = "Usuń";
             // 
             // bindingNavigatorMoveFirstItem
             // 
@@ -355,17 +320,21 @@
             this.bindingNavigatorSeparator2.Name = "bindingNavigatorSeparator2";
             this.bindingNavigatorSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
-            // toolStripButton1
+            // btnUpdateStudent
             // 
-            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton1.Text = "toolStripButton1";
+            this.btnUpdateStudent.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnUpdateStudent.Image = ((System.Drawing.Image)(resources.GetObject("btnUpdateStudent.Image")));
+            this.btnUpdateStudent.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnUpdateStudent.Name = "btnUpdateStudent";
+            this.btnUpdateStudent.Size = new System.Drawing.Size(23, 22);
+            this.btnUpdateStudent.Text = "toolStripButton1";
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.comboBoxStatus);
+            this.groupBox1.Controls.Add(this.label8);
+            this.groupBox1.Controls.Add(this.textBoxEmail);
+            this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.label6);
             this.groupBox1.Controls.Add(this.textBoxName);
@@ -385,6 +354,39 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Dane studenta";
             // 
+            // comboBoxStatus
+            // 
+            this.comboBoxStatus.FormattingEnabled = true;
+            this.comboBoxStatus.Location = new System.Drawing.Point(178, 179);
+            this.comboBoxStatus.Name = "comboBoxStatus";
+            this.comboBoxStatus.Size = new System.Drawing.Size(121, 21);
+            this.comboBoxStatus.TabIndex = 15;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(23, 179);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(37, 13);
+            this.label8.TabIndex = 14;
+            this.label8.Text = "Status";
+            // 
+            // textBoxEmail
+            // 
+            this.textBoxEmail.Location = new System.Drawing.Point(179, 110);
+            this.textBoxEmail.Name = "textBoxEmail";
+            this.textBoxEmail.Size = new System.Drawing.Size(120, 20);
+            this.textBoxEmail.TabIndex = 12;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(23, 110);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(32, 13);
+            this.label7.TabIndex = 13;
+            this.label7.Text = "Email";
+            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -397,7 +399,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(23, 285);
+            this.label6.Location = new System.Drawing.Point(22, 322);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(67, 13);
             this.label6.TabIndex = 11;
@@ -413,7 +415,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(23, 243);
+            this.label5.Location = new System.Drawing.Point(22, 280);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(63, 13);
             this.label5.TabIndex = 11;
@@ -421,7 +423,12 @@
             // 
             // numericUpDownAlbumNumber
             // 
-            this.numericUpDownAlbumNumber.Location = new System.Drawing.Point(180, 113);
+            this.numericUpDownAlbumNumber.Location = new System.Drawing.Point(179, 146);
+            this.numericUpDownAlbumNumber.Maximum = new decimal(new int[] {
+            999999,
+            0,
+            0,
+            0});
             this.numericUpDownAlbumNumber.Name = "numericUpDownAlbumNumber";
             this.numericUpDownAlbumNumber.Size = new System.Drawing.Size(120, 20);
             this.numericUpDownAlbumNumber.TabIndex = 3;
@@ -429,7 +436,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(23, 197);
+            this.label4.Location = new System.Drawing.Point(22, 234);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(79, 13);
             this.label4.TabIndex = 11;
@@ -445,7 +452,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(23, 113);
+            this.label3.Location = new System.Drawing.Point(22, 146);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(58, 13);
             this.label3.TabIndex = 11;
@@ -454,7 +461,7 @@
             // comboBoxSpecialization1
             // 
             this.comboBoxSpecialization1.FormattingEnabled = true;
-            this.comboBoxSpecialization1.Location = new System.Drawing.Point(179, 197);
+            this.comboBoxSpecialization1.Location = new System.Drawing.Point(178, 234);
             this.comboBoxSpecialization1.Name = "comboBoxSpecialization1";
             this.comboBoxSpecialization1.Size = new System.Drawing.Size(121, 21);
             this.comboBoxSpecialization1.TabIndex = 5;
@@ -471,7 +478,7 @@
             // comboBoxSpecialization2
             // 
             this.comboBoxSpecialization2.FormattingEnabled = true;
-            this.comboBoxSpecialization2.Location = new System.Drawing.Point(180, 243);
+            this.comboBoxSpecialization2.Location = new System.Drawing.Point(179, 280);
             this.comboBoxSpecialization2.Name = "comboBoxSpecialization2";
             this.comboBoxSpecialization2.Size = new System.Drawing.Size(121, 21);
             this.comboBoxSpecialization2.TabIndex = 6;
@@ -479,7 +486,7 @@
             // comboBoxSpecialization3
             // 
             this.comboBoxSpecialization3.FormattingEnabled = true;
-            this.comboBoxSpecialization3.Location = new System.Drawing.Point(180, 285);
+            this.comboBoxSpecialization3.Location = new System.Drawing.Point(179, 322);
             this.comboBoxSpecialization3.Name = "comboBoxSpecialization3";
             this.comboBoxSpecialization3.Size = new System.Drawing.Size(121, 21);
             this.comboBoxSpecialization3.TabIndex = 7;
@@ -510,6 +517,7 @@
             this.button2.TabIndex = 8;
             this.button2.Text = "Dodaj studenta";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click_1);
             // 
             // tabPage2
             // 
@@ -541,6 +549,82 @@
             this.tabPage3.Text = "Sortowanie studentów";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // przedmiotyBindingSource
+            // 
+            this.przedmiotyBindingSource.DataMember = "Przedmioty";
+            this.przedmiotyBindingSource.DataSource = this.studentManagementDataSet;
+            // 
+            // przedmiotyTableAdapter
+            // 
+            this.przedmiotyTableAdapter.ClearBeforeFill = true;
+            // 
+            // ocenyStudentowBindingSource
+            // 
+            this.ocenyStudentowBindingSource.DataMember = "OcenyStudentow";
+            this.ocenyStudentowBindingSource.DataSource = this.studentManagementDataSet1;
+            // 
+            // ocenyStudentowTableAdapter
+            // 
+            this.ocenyStudentowTableAdapter.ClearBeforeFill = true;
+            // 
+            // specjalizacjeBindingSource
+            // 
+            this.specjalizacjeBindingSource.DataMember = "Specjalizacje";
+            this.specjalizacjeBindingSource.DataSource = this.studentManagementDataSet1;
+            // 
+            // specjalizacjeTableAdapter
+            // 
+            this.specjalizacjeTableAdapter.ClearBeforeFill = true;
+            // 
+            // studentIDDataGridViewTextBoxColumn
+            // 
+            this.studentIDDataGridViewTextBoxColumn.DataPropertyName = "StudentID";
+            this.studentIDDataGridViewTextBoxColumn.HeaderText = "StudentID";
+            this.studentIDDataGridViewTextBoxColumn.Name = "studentIDDataGridViewTextBoxColumn";
+            this.studentIDDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // numerAlbumuDataGridViewTextBoxColumn
+            // 
+            this.numerAlbumuDataGridViewTextBoxColumn.DataPropertyName = "NumerAlbumu";
+            this.numerAlbumuDataGridViewTextBoxColumn.HeaderText = "NumerAlbumu";
+            this.numerAlbumuDataGridViewTextBoxColumn.Name = "numerAlbumuDataGridViewTextBoxColumn";
+            // 
+            // imieDataGridViewTextBoxColumn
+            // 
+            this.imieDataGridViewTextBoxColumn.DataPropertyName = "Imie";
+            this.imieDataGridViewTextBoxColumn.HeaderText = "Imie";
+            this.imieDataGridViewTextBoxColumn.Name = "imieDataGridViewTextBoxColumn";
+            // 
+            // nazwiskoDataGridViewTextBoxColumn
+            // 
+            this.nazwiskoDataGridViewTextBoxColumn.DataPropertyName = "Nazwisko";
+            this.nazwiskoDataGridViewTextBoxColumn.HeaderText = "Nazwisko";
+            this.nazwiskoDataGridViewTextBoxColumn.Name = "nazwiskoDataGridViewTextBoxColumn";
+            // 
+            // emailDataGridViewTextBoxColumn
+            // 
+            this.emailDataGridViewTextBoxColumn.DataPropertyName = "Email";
+            this.emailDataGridViewTextBoxColumn.HeaderText = "Email";
+            this.emailDataGridViewTextBoxColumn.Name = "emailDataGridViewTextBoxColumn";
+            // 
+            // specjalizacjaIDDataGridViewTextBoxColumn
+            // 
+            this.specjalizacjaIDDataGridViewTextBoxColumn.DataPropertyName = "SpecjalizacjaID";
+            this.specjalizacjaIDDataGridViewTextBoxColumn.HeaderText = "SpecjalizacjaID";
+            this.specjalizacjaIDDataGridViewTextBoxColumn.Name = "specjalizacjaIDDataGridViewTextBoxColumn";
+            // 
+            // sredniaOcenKwalifikacyjnaDataGridViewTextBoxColumn
+            // 
+            this.sredniaOcenKwalifikacyjnaDataGridViewTextBoxColumn.DataPropertyName = "SredniaOcenKwalifikacyjna";
+            this.sredniaOcenKwalifikacyjnaDataGridViewTextBoxColumn.HeaderText = "SredniaOcenKwalifikacyjna";
+            this.sredniaOcenKwalifikacyjnaDataGridViewTextBoxColumn.Name = "sredniaOcenKwalifikacyjnaDataGridViewTextBoxColumn";
+            // 
+            // statusKwalifikacjiDataGridViewTextBoxColumn
+            // 
+            this.statusKwalifikacjiDataGridViewTextBoxColumn.DataPropertyName = "StatusKwalifikacji";
+            this.statusKwalifikacjiDataGridViewTextBoxColumn.HeaderText = "StatusKwalifikacji";
+            this.statusKwalifikacjiDataGridViewTextBoxColumn.Name = "statusKwalifikacjiDataGridViewTextBoxColumn";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -565,6 +649,9 @@
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownAlbumNumber)).EndInit();
             this.tabPage2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.przedmiotyBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ocenyStudentowBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.specjalizacjeBindingSource)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -579,14 +666,6 @@
         private System.Windows.Forms.BindingSource studenciBindingSource1;
         private StudentManagementDataSetTableAdapters.StudenciTableAdapter studenciTableAdapter1;
         private StudentManagementDataSetTableAdapters.TableAdapterManager tableAdapterManager1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn studentIDDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn numerAlbumuDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn imieDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn nazwiskoDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn emailDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn specjalizacjaIDDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn sredniaOcenKwalifikacyjnaDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn statusKwalifikacjiDataGridViewTextBoxColumn;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
@@ -611,7 +690,7 @@
         private System.Windows.Forms.BindingNavigator bindingNavigator1;
         private System.Windows.Forms.ToolStripButton BtnAddStudent;
         private System.Windows.Forms.ToolStripLabel bindingNavigatorCountItem;
-        private System.Windows.Forms.ToolStripButton deleteItem;
+        private System.Windows.Forms.ToolStripButton btnDeleteStudent;
         private System.Windows.Forms.ToolStripButton bindingNavigatorMoveFirstItem;
         private System.Windows.Forms.ToolStripButton bindingNavigatorMovePreviousItem;
         private System.Windows.Forms.ToolStripSeparator bindingNavigatorSeparator;
@@ -620,7 +699,25 @@
         private System.Windows.Forms.ToolStripButton bindingNavigatorMoveNextItem;
         private System.Windows.Forms.ToolStripButton bindingNavigatorMoveLastItem;
         private System.Windows.Forms.ToolStripSeparator bindingNavigatorSeparator2;
-        private System.Windows.Forms.ToolStripButton toolStripButton1;
+        private System.Windows.Forms.ToolStripButton btnUpdateStudent;
+        private System.Windows.Forms.TextBox textBoxEmail;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.ComboBox comboBoxStatus;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.BindingSource przedmiotyBindingSource;
+        private StudentManagementDataSetTableAdapters.PrzedmiotyTableAdapter przedmiotyTableAdapter;
+        private System.Windows.Forms.BindingSource ocenyStudentowBindingSource;
+        private StudentManagementDataSet1TableAdapters.OcenyStudentowTableAdapter ocenyStudentowTableAdapter;
+        private System.Windows.Forms.BindingSource specjalizacjeBindingSource;
+        private StudentManagementDataSet1TableAdapters.SpecjalizacjeTableAdapter specjalizacjeTableAdapter;
+        private System.Windows.Forms.DataGridViewTextBoxColumn studentIDDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn numerAlbumuDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn imieDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn nazwiskoDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn emailDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn specjalizacjaIDDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn sredniaOcenKwalifikacyjnaDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn statusKwalifikacjiDataGridViewTextBoxColumn;
     }
 }
 
