@@ -11,6 +11,7 @@ namespace UniManagement
         private SqlDataAdapter dataAdapter;
         private DataSet dataSet;
         private BindingSource bindingSource;
+
         public Form1()
         {
             InitializeComponent();
