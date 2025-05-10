@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace UniManagement
@@ -190,7 +191,42 @@ namespace UniManagement
                     string.IsNullOrWhiteSpace(textBoxEmail.Text) ||
                     string.IsNullOrWhiteSpace(numericUpDownAlbumNumber.Text))
                 {
-                    MessageBox.Show("Proszę wypełnić wszystkie wymagane pola!", "Uwaga", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Proszę wypełnić wszystkie wymagane pola!",
+                        "Uwaga", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Walidacja numeru albumu
+                string albumNumber = numericUpDownAlbumNumber.Text;
+                if (!ValidateAlbumNumber(albumNumber))
+                {
+                    MessageBox.Show("Numer albumu musi składać się dokładnie z 6 cyfr!",
+                        "Błąd walidacji", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Walidacja adresu email
+                string email = textBoxEmail.Text;
+                if (!ValidateEmail(email))
+                {
+                    MessageBox.Show("Podany adres email jest nieprawidłowy. Musi zawierać znak @ oraz kropkę!",
+                        "Błąd walidacji", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Sprawdzenie czy numer albumu już istnieje
+                if (AlbumNumberExists(albumNumber))
+                {
+                    MessageBox.Show("Student o podanym numerze albumu już istnieje w bazie danych!",
+                        "Duplikat", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Sprawdzenie czy email już istnieje
+                if (EmailExists(email))
+                {
+                    MessageBox.Show("Student o podanym adresie email już istnieje w bazie danych!",
+                        "Duplikat", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -198,10 +234,10 @@ namespace UniManagement
                 DataRow newRow = dataSet.Tables["Students"].NewRow();
 
                 // Ustawienie wartości dla nowego studenta
-                newRow["NumerAlbumu"] = numericUpDownAlbumNumber.Text;
+                newRow["NumerAlbumu"] = albumNumber;
                 newRow["Imie"] = textBoxName.Text;
                 newRow["Nazwisko"] = textBoxSurname.Text;
-                newRow["Email"] = textBoxEmail.Text;
+                newRow["Email"] = email;
                 newRow["SpecjalizacjaID"] = DBNull.Value; // Null dla SpecjalizacjaID
                 newRow["SredniaOcenKwalifikacyjna"] = DBNull.Value; // Null dla SredniaOcenKwalifikacyjna
                 newRow["StatusKwalifikacji"] = comboBoxStatus.SelectedItem ?? DBNull.Value;
@@ -215,14 +251,16 @@ namespace UniManagement
                 // Odświeżenie danych
                 LoadData();
 
-                MessageBox.Show("Student został dodany pomyślnie!", "Sukces", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Student został dodany pomyślnie!",
+                    "Sukces", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 // Wyczyszczenie pól
                 ClearFields();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Błąd podczas dodawania studenta: {ex.Message}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Błąd podczas dodawania studenta: {ex.Message}",
+                    "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -233,7 +271,8 @@ namespace UniManagement
             {
                 if (bindingSource.Current == null)
                 {
-                    MessageBox.Show("Proszę wybrać studenta do edycji!", "Uwaga", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Proszę wybrać studenta do edycji!",
+                        "Uwaga", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -243,7 +282,46 @@ namespace UniManagement
                     string.IsNullOrWhiteSpace(textBoxEmail.Text) ||
                     string.IsNullOrWhiteSpace(numericUpDownAlbumNumber.Text))
                 {
-                    MessageBox.Show("Proszę wypełnić wszystkie wymagane pola!", "Uwaga", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Proszę wypełnić wszystkie wymagane pola!",
+                        "Uwaga", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Pobranie ID aktualnie edytowanego studenta
+                DataRowView currentRowView = (DataRowView)bindingSource.Current;
+                int studentId = Convert.ToInt32(currentRowView["StudentID"]);
+
+                // Walidacja numeru albumu
+                string albumNumber = numericUpDownAlbumNumber.Text;
+                if (!ValidateAlbumNumber(albumNumber))
+                {
+                    MessageBox.Show("Numer albumu musi składać się dokładnie z 6 cyfr!",
+                        "Błąd walidacji", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Walidacja adresu email
+                string email = textBoxEmail.Text;
+                if (!ValidateEmail(email))
+                {
+                    MessageBox.Show("Podany adres email jest nieprawidłowy. Musi zawierać znak @ oraz kropkę!",
+                        "Błąd walidacji", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Sprawdzenie czy numer albumu już istnieje (z wykluczeniem aktualnego rekordu)
+                if (AlbumNumberExists(albumNumber, studentId))
+                {
+                    MessageBox.Show("Student o podanym numerze albumu już istnieje w bazie danych!",
+                        "Duplikat", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Sprawdzenie czy email już istnieje (z wykluczeniem aktualnego rekordu)
+                if (EmailExists(email, studentId))
+                {
+                    MessageBox.Show("Student o podanym adresie email już istnieje w bazie danych!",
+                        "Duplikat", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
@@ -256,11 +334,13 @@ namespace UniManagement
                 // Odświeżenie danych
                 LoadData();
 
-                MessageBox.Show("Dane studenta zostały zaktualizowane pomyślnie!", "Sukces", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Dane studenta zostały zaktualizowane pomyślnie!",
+                    "Sukces", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Błąd podczas edycji studenta: {ex.Message}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Błąd podczas edycji studenta: {ex.Message}",
+                    "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -317,6 +397,76 @@ namespace UniManagement
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e) { }
 
 
+        private bool EmailExists(string email, int? excludeStudentId = null)
+        {
+            try
+            {
+                foreach (DataRow row in dataSet.Tables["Students"].Rows)
+                {
+                    // Jeśli wiersz jest oznaczony do usunięcia, pomijamy go
+                    if (row.RowState == DataRowState.Deleted)
+                        continue;
+
+                    // Jeśli podano ID do wykluczenia (np. przy edycji), pomijamy ten rekord
+                    if (excludeStudentId.HasValue &&
+                        row["StudentID"] != DBNull.Value &&
+                        Convert.ToInt32(row["StudentID"]) == excludeStudentId.Value)
+                        continue;
+
+                    if (row["Email"].ToString().Equals(email, StringComparison.OrdinalIgnoreCase))
+                        return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Błąd podczas sprawdzania adresu email: {ex.Message}",
+                    "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+        }
+
+        private bool AlbumNumberExists(string albumNumber, int? excludeStudentId = null)
+        {
+            try
+            {
+                foreach (DataRow row in dataSet.Tables["Students"].Rows)
+                {
+                    // Jeśli wiersz jest oznaczony do usunięcia, pomijamy go
+                    if (row.RowState == DataRowState.Deleted)
+                        continue;
+
+                    // Jeśli podano ID do wykluczenia (np. przy edycji), pomijamy ten rekord
+                    if (excludeStudentId.HasValue &&
+                        row["StudentID"] != DBNull.Value &&
+                        Convert.ToInt32(row["StudentID"]) == excludeStudentId.Value)
+                        continue;
+
+                    if (row["NumerAlbumu"].ToString() == albumNumber)
+                        return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Błąd podczas sprawdzania numeru albumu: {ex.Message}",
+                    "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+        }
+
+        private bool ValidateAlbumNumber(string albumNumber)
+        {
+            // Sprawdzenie czy składa się dokładnie z 6 cyfr
+            return Regex.IsMatch(albumNumber, @"^\d{6}$");
+        }
+
+        // Funkcja walidująca adres email - musi zawierać @ i kropkę
+        private bool ValidateEmail(string email)
+        {
+            // Sprawdzenie podstawowej struktury adresu email
+            return Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+        }
 
         private void ClearFields()
         {
