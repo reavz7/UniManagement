@@ -28,8 +28,8 @@ namespace UniManagement
                 bindingSource = new BindingSource();
 
                 // Konfiguracja ComboBox dla statusu kwalifikacji
+                comboBoxStatus.Items.Add("Oczekujący");
                 comboBoxStatus.Items.Add("Zakwalifikowany");
-                comboBoxStatus.Items.Add("Niezakwalifikowany");
                 comboBoxStatus.Items.Add("W trakcie rozpatrywania");
                 comboBoxStatus.DropDownStyle = ComboBoxStyle.DropDownList;
             }
@@ -246,13 +246,8 @@ namespace UniManagement
                     return;
                 }
 
-                // Aktualizacja wiersza
-                DataRowView currentRow = (DataRowView)bindingSource.Current;
-                currentRow["NumerAlbumu"] = numericUpDownAlbumNumber.Text;
-                currentRow["Imie"] = textBoxName.Text;
-                currentRow["Nazwisko"] = textBoxSurname.Text;
-                currentRow["Email"] = textBoxEmail.Text;
-                currentRow["StatusKwalifikacji"] = comboBoxStatus.SelectedItem ?? currentRow["StatusKwalifikacji"];
+                // Zatwierdzenie zmian z kontrolek do BindingSource
+                bindingSource.EndEdit();
 
                 // Aktualizacja bazy danych
                 dataAdapter.Update(dataSet, "Students");
@@ -267,6 +262,9 @@ namespace UniManagement
                 MessageBox.Show($"Błąd podczas edycji studenta: {ex.Message}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+
+
 
         private void button4_Click(object sender, EventArgs e)
         {
