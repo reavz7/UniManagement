@@ -61,8 +61,6 @@ namespace UniManagement
         {
             try
             {
-                // Jeśli dataSet był już używany, a tabela "Students" istnieje, wyczyść ją przed ponownym załadowaniem.
-                // Zachowaj jednak definicję tabeli, w tym klucz główny, jeśli został już ustawiony.
                 if (dataSet.Tables.Contains("Students"))
                 {
                     dataSet.Tables["Students"].Clear();
@@ -79,13 +77,9 @@ namespace UniManagement
 
                 dataAdapter.Fill(dataSet, "Students");
 
-                // Ustawienie klucza głównego dla tabeli "Students" w głównym dataSet
-                // Należy to zrobić PO wypełnieniu tabeli, ale PRZED próbą użycia Rows.Find() lub Update()
                 if (dataSet.Tables["Students"].PrimaryKey.Length == 0 && dataSet.Tables["Students"].Columns.Contains("StudentID"))
                 {
                     dataSet.Tables["Students"].PrimaryKey = new DataColumn[] { dataSet.Tables["Students"].Columns["StudentID"] };
-                    // Opcjonalnie: AppendToLog lub MessageBox informujący o ustawieniu klucza, jeśli potrzebne do debugowania.
-                    // Pamiętaj, że AppendToLog jest zdefiniowany w kontekście zakładki przypisywania.
                 }
 
                 bindingSource.DataSource = dataSet.Tables["Students"];
@@ -95,16 +89,6 @@ namespace UniManagement
                 MessageBox.Show($"Błąd podczas wczytywania danych: {ex.Message}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-        // Metoda ConfigureCommands jest wywoływana w LoadData przez SqlCommandBuilder, więc osobne wywołanie nie jest konieczne.
-        // Jeśli jednak chcesz ją zachować dla przejrzystości lub innych celów, możesz to zrobić.
-        // private void ConfigureCommands()
-        // {
-        //     SqlCommandBuilder commandBuilder = new SqlCommandBuilder(dataAdapter);
-        //     dataAdapter.InsertCommand = commandBuilder.GetInsertCommand();
-        //     dataAdapter.UpdateCommand = commandBuilder.GetUpdateCommand();
-        //     dataAdapter.DeleteCommand = commandBuilder.GetDeleteCommand();
-        // }
 
         private void SetupDataBindings()
         {
@@ -130,7 +114,6 @@ namespace UniManagement
             studentsDataGridView.AutoGenerateColumns = false;
             studentsDataGridView.Columns.Clear();
 
-            // ... (reszta konfiguracji kolumn jak w oryginalnym kodzie) ...
             DataGridViewTextBoxColumn idColumn = new DataGridViewTextBoxColumn { DataPropertyName = "StudentID", HeaderText = "ID", ReadOnly = true, Width = 50 };
             studentsDataGridView.Columns.Add(idColumn);
             DataGridViewTextBoxColumn albumColumn = new DataGridViewTextBoxColumn { DataPropertyName = "NumerAlbumu", HeaderText = "Nr albumu", Width = 100 };
@@ -174,11 +157,11 @@ namespace UniManagement
                 newRow["Nazwisko"] = textBoxSurname.Text;
                 newRow["Email"] = email;
                 newRow["SpecjalizacjaID"] = DBNull.Value;
-                newRow["SredniaOcenKwalifikacyjna"] = DBNull.Value; // Można dodać pole do wprowadzania średniej przy dodawaniu lub zostawić NULL
+                newRow["SredniaOcenKwalifikacyjna"] = DBNull.Value; 
                 newRow["StatusKwalifikacji"] = comboBoxStatus.SelectedItem?.ToString() ?? "Oczekujący";
                 dataSet.Tables["Students"].Rows.Add(newRow);
                 dataAdapter.Update(dataSet, "Students");
-                LoadData(); // Odświeżenie danych, w tym ID z bazy
+                LoadData();
                 MessageBox.Show("Student został dodany pomyślnie!", "Sukces", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ClearFields();
             }
@@ -208,10 +191,9 @@ namespace UniManagement
                 if (EmailExists(email, studentId))
                 { MessageBox.Show("Student o podanym adresie email już istnieje w bazie danych!", "Duplikat", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
 
-                bindingSource.EndEdit(); // Zapisuje zmiany z kontrolek do DataRowView
-                // SredniaOcenKwalifikacyjna i SpecjalizacjaID nie są edytowalne na tym formularzu, więc nie ma potrzeby ich aktualizować
+                bindingSource.EndEdit(); 
                 dataAdapter.Update(dataSet, "Students");
-                LoadData(); // Ważne, aby odświeżyć ID, jeśli byłoby dodawanie i od razu edycja
+                LoadData(); 
                 MessageBox.Show("Dane studenta zostały zaktualizowane pomyślnie!", "Sukces", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
@@ -228,24 +210,22 @@ namespace UniManagement
                 if (result == DialogResult.No) return;
 
                 DataRowView currentRow = (DataRowView)bindingSource.Current;
-                // Sprawdzenie, czy student ma powiązane preferencje i czy należy je usunąć (CASCADE w bazie to załatwi)
-                // lub wyświetlić ostrzeżenie. Na razie zakładamy, że baza obsługuje kaskadowe usuwanie.
                 currentRow.Delete();
                 dataAdapter.Update(dataSet, "Students");
                 LoadData();
                 MessageBox.Show("Student został usunięty pomyślnie!", "Sukces", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ClearFields();
             }
-            catch (SqlException sqlEx) when (sqlEx.Number == 547) // Foreign key constraint violation
+            catch (SqlException sqlEx) when (sqlEx.Number == 547) 
             {
                 MessageBox.Show($"Nie można usunąć studenta, ponieważ istnieją powiązane z nim dane (np. preferencje).\nNajpierw usuń powiązane dane.\n\nSzczegóły: {sqlEx.Message}", "Błąd usuwania", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                LoadData(); // Przywróć stan, bo Delete() mogło zostać wycofane
+                LoadData(); 
             }
             catch (Exception ex)
             { MessageBox.Show($"Błąd podczas usuwania studenta: {ex.Message}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
 
-        private void button1_Click_1(object sender, EventArgs e) // Odśwież dane (z pierwszej zakładki)
+        private void button1_Click_1(object sender, EventArgs e) 
         {
             LoadData();
             MessageBox.Show("Dane zostały odświeżone!", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -271,10 +251,10 @@ namespace UniManagement
             textBoxName.Clear();
             textBoxSurname.Clear();
             textBoxEmail.Clear();
-            if (numericUpDownAlbumNumber.Minimum <= 0 && numericUpDownAlbumNumber.Maximum >= 0) // Zakładając, że 0 jest ok jako domyślne
-                numericUpDownAlbumNumber.Value = 0; // Lub numericUpDownAlbumNumber.Text = ""; lub specyficzna wartość minimalna
+            if (numericUpDownAlbumNumber.Minimum <= 0 && numericUpDownAlbumNumber.Maximum >= 0)
+                numericUpDownAlbumNumber.Value = 0;
             else if (numericUpDownAlbumNumber.Minimum > numericUpDownAlbumNumber.Maximum)
-                numericUpDownAlbumNumber.Value = numericUpDownAlbumNumber.Minimum; // jeśli min > max to problem z kontrolką
+                numericUpDownAlbumNumber.Value = numericUpDownAlbumNumber.Minimum;
             else
                 numericUpDownAlbumNumber.Value = numericUpDownAlbumNumber.Minimum;
 
@@ -282,20 +262,15 @@ namespace UniManagement
             comboBoxStatus.SelectedIndex = -1;
         }
 
-        // Puste event handlery - można je usunąć, jeśli nie są już nigdzie podpięte w Designer.cs
+        
         private void panel2_Paint(object sender, PaintEventArgs e) { }
-        private void button1_Click(object sender, EventArgs e) { } // Jeśli to duplikat, należy go usunąć
-        private void button2_Click(object sender, EventArgs e) { } // Jeśli to duplikat, należy go usunąć
-        private void button3_Click(object sender, EventArgs e) { } // Jeśli to duplikat, należy go usunąć
+        private void button1_Click(object sender, EventArgs e) { } 
+        private void button2_Click(object sender, EventArgs e) { }
+        private void button3_Click(object sender, EventArgs e) { }
         private void sortStudents1_Load(object sender, EventArgs e) { }
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e) { } // Dla studentsDataGridView? Jeśli tak, zachowaj.
-        private void dgvGroupsPreview_CellContentClick(object sender, DataGridViewCellEventArgs e) { } // Pusty, dodałem później
-        private void txtAssignmentLog_TextChanged(object sender, EventArgs e) { } // Pusty, może być potrzebny, jeśli chcemy auto-scroll
-
-
-        // ############################################################################
-        // NOWA FUNKCJONALNOŚĆ - PRZYPISYWANIE STUDENTÓW DO SPECJALIZACJI
-        // ############################################################################
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e) { } 
+        private void dgvGroupsPreview_CellContentClick(object sender, DataGridViewCellEventArgs e) { } 
+        private void txtAssignmentLog_TextChanged(object sender, EventArgs e) { } 
 
         private void InitializeAssignmentTabComponents()
         {
@@ -341,19 +316,18 @@ namespace UniManagement
 
         private void AppendToLog(string message)
         {
-            // Upewnij się, że kontrolka txtAssignmentLog istnieje na formularzu
             if (this.Controls.Find("txtAssignmentLog", true).FirstOrDefault() is TextBox logBox)
             {
                 logBox.AppendText($"{DateTime.Now:G}: {message}{Environment.NewLine}");
             }
-            else if (tcAssignmentResults != null && tpAssignmentLog != null && txtAssignmentLog != null) // Sprawdzenie czy kontrolki są zainicjalizowane
+            else if (tcAssignmentResults != null && tpAssignmentLog != null && txtAssignmentLog != null) 
             {
                 txtAssignmentLog.AppendText($"{DateTime.Now:G}: {message}{Environment.NewLine}");
             }
 
         }
 
-        // btnLoadDataForAssignment_Click - dodanie ustawienia klucza dla Specializations w assignmentDataSet
+       
         private void btnLoadDataForAssignment_Click(object sender, EventArgs e)
         {
             try
@@ -396,24 +370,14 @@ namespace UniManagement
                     row[tempAssignmentStatusColName] = "Oczekujący na przypisanie";
                 }
 
-                // 2. Wczytaj specjalizacje
-                // specializationsAdapter jest polem klasy, więc konfigurujemy go tak, aby był trwały.
+                
                 string specsQuery = "SELECT SpecjalizacjaID, NazwaSpecjalizacji, LimitMiejsc, MinimalnaSredniaOgólna, AktualnieZajeteMiejsca FROM Specjalizacje ORDER BY NazwaSpecjalizacji;";
 
-                // Tworzymy nowy adapter lub rekonfigurujemy istniejący
                 specializationsAdapter = new SqlDataAdapter();
-                // SelectCommand dostaje NOWY, DEDYKOWANY obiekt SqlConnection.
-                // Ten obiekt połączenia będzie żył tak długo, jak adapter (lub jego SelectCommand)
-                // i adapter będzie nim zarządzał (otwierał/zamykał).
                 specializationsAdapter.SelectCommand = new SqlCommand(specsQuery, new SqlConnection(connectionString));
 
-                // SqlCommandBuilder użyje połączenia z SelectCommand do zbudowania UpdateCommand (i innych).
-                // Te wygenerowane komendy będą współdzielić ten sam, "długożyjący" obiekt połączenia.
                 SqlCommandBuilder specBuilder = new SqlCommandBuilder(specializationsAdapter);
                 specializationsAdapter.UpdateCommand = specBuilder.GetUpdateCommand();
-                // Jeśli potrzebujesz Insert/Delete dla specjalizacji przez ten adapter, też je pobierz:
-                // specializationsAdapter.InsertCommand = specBuilder.GetInsertCommand();
-                // specializationsAdapter.DeleteCommand = specBuilder.GetDeleteCommand();
 
                 specializationsAdapter.Fill(assignmentDataSet, specializationsTableName);
                 AppendToLog($"Załadowano {assignmentDataSet.Tables[specializationsTableName].Rows.Count} specjalizacji.");
@@ -432,8 +396,6 @@ namespace UniManagement
                     dtSpecializations.Columns.Add(wolneMiejscaCol);
                 }
 
-                // 3. Wczytaj preferencje studentów
-                // Ten adapter również może być lokalny.
                 using (SqlConnection connPrefs = new SqlConnection(connectionString))
                 {
                     string prefsQuery = "SELECT PreferencjaID, StudentID, SpecjalizacjaID, Priorytet FROM PreferencjeStudentow ORDER BY StudentID, Priorytet;";
@@ -476,7 +438,6 @@ namespace UniManagement
 
             AppendToLog($"Rozpoczęto {statusMessagePrefix} (priorytet {priority})...");
 
-            // Sortowanie studentów wg średniej malejąco, następnie wg nazwiska i imienia
             DataRow[] studentsToConsider = dtStudents.Select($"{tempAssignedSpecIdColName} IS NULL", "SredniaOcenKwalifikacyjna DESC, Nazwisko ASC, Imie ASC");
 
             foreach (DataRow studentRow in studentsToConsider)
@@ -485,7 +446,7 @@ namespace UniManagement
                 decimal studentAvgGrade = Convert.ToDecimal(studentRow["SredniaOcenKwalifikacyjna"]);
 
                 DataRow[] studentPrefs = dtPreferences.Select($"StudentID = {studentId} AND Priorytet = {priority}");
-                if (studentPrefs.Length == 0) continue; // Student nie ma preferencji o tym priorytecie
+                if (studentPrefs.Length == 0) continue;
 
                 int specializationId = Convert.ToInt32(studentPrefs[0]["SpecjalizacjaID"]);
                 DataRow[] specRows = dtSpecializations.Select($"SpecjalizacjaID = {specializationId}");
@@ -542,9 +503,7 @@ namespace UniManagement
         {
             try
             {
-                // Najpierw priorytet 2
                 ProcessAssignmentRound(2, "Krok 2 (Prio 2)");
-                // Następnie priorytet 3 dla tych, co pozostali
                 ProcessAssignmentRound(3, "Krok 2 (Prio 3)");
             }
             catch (Exception ex)
@@ -570,7 +529,7 @@ namespace UniManagement
             }
 
             int studentsUpdatedCount = 0;
-            int specializationsUpdatedCount = 0; // Zadeklarowana, używana w MessageBoxie
+            int specializationsUpdatedCount = 0;
 
             try
             {
@@ -594,9 +553,6 @@ namespace UniManagement
                         {
                             mainStudentRow["SpecjalizacjaID"] = specializationId;
                             mainStudentRow["StatusKwalifikacji"] = finalStatus;
-                            // Zmiana jest w dtMainStudents, które jest częścią dataSet
-                            // dataAdapter (główny) zaktualizuje to.
-                            studentsUpdatedCount++; // Liczymy ilu studentów faktycznie próbujemy zaktualizować w głównym dataSet.
                             AppendToLog($"Przygotowano aktualizację dla studenta ID: {studentId} - Spec: {specializationId}, Status: {finalStatus}");
                         }
                         else
@@ -606,43 +562,39 @@ namespace UniManagement
                     }
                 }
 
-                // Zapisz zmiany w tabeli Studenci (używając głównego dataAdapter)
-                if (dataSet.HasChanges(DataRowState.Modified | DataRowState.Added | DataRowState.Deleted)) // Sprawdzamy, czy są jakiekolwiek zmiany w głównym dataSet
+                if (dataSet.HasChanges(DataRowState.Modified | DataRowState.Added | DataRowState.Deleted))
                 {
                     if (dataAdapter.UpdateCommand == null || dataAdapter.UpdateCommand.Connection == null || string.IsNullOrEmpty(dataAdapter.UpdateCommand.Connection.ConnectionString))
                     {
                         AppendToLog("BŁĄD KRYTYCZNY: Główny dataAdapter nie ma prawidłowego UpdateCommand lub połączenia.");
                         MessageBox.Show("Błąd konfiguracji głównego adaptera danych. Nie można zapisać zmian studentów.", "Błąd krytyczny", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        if (assignmentDataSet.HasChanges()) assignmentDataSet.RejectChanges(); // Odrzuć tymczasowe zmiany, bo zapis się nie udał
+                        if (assignmentDataSet.HasChanges()) assignmentDataSet.RejectChanges();
                         return;
                     }
                     int actualStudentsUpdatedInDb = dataAdapter.Update(dataSet, "Students");
                     AppendToLog($"Zaktualizowano {actualStudentsUpdatedInDb} wierszy studentów w bazie danych.");
-                    dataSet.AcceptChanges(); // Zaakceptuj zmiany w głównym dataSet PO udanym zapisie do bazy
+                    dataSet.AcceptChanges();
                 }
                 else
                 {
                     AppendToLog("Brak zmian w danych studentów do zapisania w bazie.");
                 }
 
-                // Zapisz zmiany w tabeli Specjalizacje (używając specializationsAdapter)
                 DataTable specializationsChanges = assignmentDataSet.Tables[specializationsTableName].GetChanges(DataRowState.Modified);
                 if (specializationsChanges != null && specializationsChanges.Rows.Count > 0)
                 {
                     if (specializationsAdapter != null && specializationsAdapter.UpdateCommand != null && specializationsAdapter.UpdateCommand.Connection != null && !string.IsNullOrEmpty(specializationsAdapter.UpdateCommand.Connection.ConnectionString))
                     {
-                        // UpdateCommand dla specializationsAdapter zostało skonfigurowane w btnLoadDataForAssignment_Click
-                        // z własnym, "długożyjącym" obiektem SqlConnection. Adapter sam nim zarządzi.
-                        int updatedSpecRows = specializationsAdapter.Update(specializationsChanges); // Przekazujemy tylko zmienione wiersze
+                        int updatedSpecRows = specializationsAdapter.Update(specializationsChanges);
                         AppendToLog($"Zaktualizowano {updatedSpecRows} specjalizacji (zajęte miejsca) w bazie danych.");
-                        assignmentDataSet.Tables[specializationsTableName].AcceptChanges(); // Zaakceptuj zmiany w assignmentDataSet dla specjalizacji
+                        assignmentDataSet.Tables[specializationsTableName].AcceptChanges();
                         specializationsUpdatedCount = updatedSpecRows;
                     }
                     else
                     {
                         AppendToLog("BŁĄD KRYTYCZNY: Adapter specjalizacji lub jego UpdateCommand/Connection nie jest poprawnie skonfigurowany.");
                         MessageBox.Show("Błąd konfiguracji adaptera specjalizacji. Nie można zapisać zmian.", "Błąd krytyczny", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        if (dataSet.HasChanges()) dataSet.RejectChanges(); // Odrzuć zmiany studentów, jeśli specjalizacje się nie zapisały
+                        if (dataSet.HasChanges()) dataSet.RejectChanges();
                         return;
                     }
                 }
@@ -674,7 +626,7 @@ namespace UniManagement
                 lblStudentsAssignedStep1Count.Text = "0";
                 lblStudentsAssignedStep2Count.Text = "0";
                 lblStudentsStillUnassignedCount.Text = "0";
-                bsUnassignedStudents.Filter = ""; // Wyczyść filtr, jeśli nie ma danych
+                bsUnassignedStudents.Filter = "";
                 return;
             }
 
@@ -690,16 +642,11 @@ namespace UniManagement
             lblStudentsAssignedStep2Count.Text = assignedStep2.ToString();
             lblStudentsStillUnassignedCount.Text = stillUnassigned.ToString();
 
-            // Odśwież widok nieprzypisanych studentów
-            // Filtr może być bardziej złożony, np. pokazywać tylko tych z tempAssignedSpecIdColName IS NULL
             bsUnassignedStudents.Filter = $"{tempAssignedSpecIdColName} IS NULL AND ({tempAssignmentStatusColName} = 'Oczekujący na przypisanie' OR {tempAssignmentStatusColName} IS NULL)";
 
-            // Odświeżenie DataGridViews, jeśli nie odświeżają się automatycznie
-            // bsUnassignedStudents.ResetBindings(false); // Może być potrzebne
-            // bsGroupsPreview.ResetBindings(false); // Może być potrzebne
 
             dgvUnassignedStudents.Refresh();
-            dgvGroupsPreview.Refresh(); // Dla kolumny Expression
+            dgvGroupsPreview.Refresh();
 
             AppendToLog("Zaktualizowano liczniki i widoki.");
         }
