@@ -28,11 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
             this.studentsDataGridView = new System.Windows.Forms.DataGridView();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.button1 = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.comboBoxStatus = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
@@ -47,6 +48,15 @@
             this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.button5 = new System.Windows.Forms.Button();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.comboBoxSpecialization1 = new System.Windows.Forms.ComboBox();
+            this.comboBoxSpecialization2 = new System.Windows.Forms.ComboBox();
+            this.comboBoxSpecialization3 = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.dgvStudentGrades = new System.Windows.Forms.DataGridView();
             this.pnlGradeActions = new System.Windows.Forms.Panel();
@@ -77,21 +87,13 @@
             this.btnAssignStep1 = new System.Windows.Forms.Button();
             this.btnAssignStep2Redistribute = new System.Windows.Forms.Button();
             this.btnConfirmAssignments = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.comboBoxSpecialization1 = new System.Windows.Forms.ComboBox();
-            this.comboBoxSpecialization2 = new System.Windows.Forms.ComboBox();
-            this.comboBoxSpecialization3 = new System.Windows.Forms.ComboBox();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.button5 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.studentsDataGridView)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownAlbumNumber)).BeginInit();
+            this.tabPage4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvStudentGrades)).BeginInit();
             this.pnlGradeActions.SuspendLayout();
@@ -104,8 +106,6 @@
             this.tpGroupsPreview.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvGroupsPreview)).BeginInit();
             this.pnlAssignmentControls.SuspendLayout();
-            this.tabPage4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // studentsDataGridView
@@ -147,6 +147,16 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Zarządzanie studentami";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(20, 481);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(438, 49);
+            this.button1.TabIndex = 13;
+            this.button1.Text = "Odśwież";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click_1);
             // 
             // groupBox1
             // 
@@ -283,6 +293,92 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click_1);
             // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.button5);
+            this.tabPage4.Controls.Add(this.dataGridView1);
+            this.tabPage4.Controls.Add(this.label6);
+            this.tabPage4.Controls.Add(this.label5);
+            this.tabPage4.Controls.Add(this.label4);
+            this.tabPage4.Controls.Add(this.comboBoxSpecialization1);
+            this.tabPage4.Controls.Add(this.comboBoxSpecialization2);
+            this.tabPage4.Controls.Add(this.comboBoxSpecialization3);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(1057, 558);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "Specjalizacje studentów";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(32, 315);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(274, 68);
+            this.button5.TabIndex = 19;
+            this.button5.Text = "Przypisz";
+            this.button5.UseVisualStyleBackColor = true;
+            // 
+            // dataGridView1
+            // 
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Location = new System.Drawing.Point(363, 45);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.Size = new System.Drawing.Size(676, 475);
+            this.dataGridView1.TabIndex = 18;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(29, 271);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(67, 13);
+            this.label6.TabIndex = 15;
+            this.label6.Text = "Trzeci wybór";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(29, 229);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(63, 13);
+            this.label5.TabIndex = 16;
+            this.label5.Text = "Drugi wybór";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(29, 183);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(79, 13);
+            this.label4.TabIndex = 17;
+            this.label4.Text = "Pierwszy wybór";
+            // 
+            // comboBoxSpecialization1
+            // 
+            this.comboBoxSpecialization1.FormattingEnabled = true;
+            this.comboBoxSpecialization1.Location = new System.Drawing.Point(185, 183);
+            this.comboBoxSpecialization1.Name = "comboBoxSpecialization1";
+            this.comboBoxSpecialization1.Size = new System.Drawing.Size(121, 21);
+            this.comboBoxSpecialization1.TabIndex = 12;
+            // 
+            // comboBoxSpecialization2
+            // 
+            this.comboBoxSpecialization2.FormattingEnabled = true;
+            this.comboBoxSpecialization2.Location = new System.Drawing.Point(186, 229);
+            this.comboBoxSpecialization2.Name = "comboBoxSpecialization2";
+            this.comboBoxSpecialization2.Size = new System.Drawing.Size(121, 21);
+            this.comboBoxSpecialization2.TabIndex = 13;
+            // 
+            // comboBoxSpecialization3
+            // 
+            this.comboBoxSpecialization3.FormattingEnabled = true;
+            this.comboBoxSpecialization3.Location = new System.Drawing.Point(186, 271);
+            this.comboBoxSpecialization3.Name = "comboBoxSpecialization3";
+            this.comboBoxSpecialization3.Size = new System.Drawing.Size(121, 21);
+            this.comboBoxSpecialization3.TabIndex = 14;
+            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.dgvStudentGrades);
@@ -302,18 +398,18 @@
             this.dgvStudentGrades.AllowUserToDeleteRows = false;
             this.dgvStudentGrades.AllowUserToOrderColumns = true;
             this.dgvStudentGrades.AllowUserToResizeRows = false;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
-            this.dgvStudentGrades.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle13.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            this.dgvStudentGrades.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle13;
             this.dgvStudentGrades.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgvStudentGrades.BackgroundColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.ControlLight;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvStudentGrades.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle14.BackColor = System.Drawing.SystemColors.ControlLight;
+            dataGridViewCellStyle14.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            dataGridViewCellStyle14.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle14.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle14.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle14.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvStudentGrades.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle14;
             this.dgvStudentGrades.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvStudentGrades.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvStudentGrades.Location = new System.Drawing.Point(8, 77);
@@ -480,6 +576,7 @@
             this.txtAssignmentLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtAssignmentLog.Size = new System.Drawing.Size(1039, 424);
             this.txtAssignmentLog.TabIndex = 0;
+            this.txtAssignmentLog.TextChanged += new System.EventHandler(this.txtAssignmentLog_TextChanged);
             // 
             // tpGroupsPreview
             // 
@@ -506,6 +603,7 @@
             this.dgvGroupsPreview.RowTemplate.Height = 24;
             this.dgvGroupsPreview.Size = new System.Drawing.Size(1043, 428);
             this.dgvGroupsPreview.TabIndex = 0;
+            this.dgvGroupsPreview.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvGroupsPreview_CellContentClick);
             // 
             // pnlAssignmentControls
             // 
@@ -532,7 +630,7 @@
             // 
             this.lblStudentsStillUnassignedCount.AutoSize = true;
             this.lblStudentsStillUnassignedCount.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lblStudentsStillUnassignedCount.Location = new System.Drawing.Point(270, 69);
+            this.lblStudentsStillUnassignedCount.Location = new System.Drawing.Point(320, 69);
             this.lblStudentsStillUnassignedCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblStudentsStillUnassignedCount.Name = "lblStudentsStillUnassignedCount";
             this.lblStudentsStillUnassignedCount.Size = new System.Drawing.Size(14, 13);
@@ -542,7 +640,7 @@
             // lblInfoStillUnassigned
             // 
             this.lblInfoStillUnassigned.AutoSize = true;
-            this.lblInfoStillUnassigned.Location = new System.Drawing.Point(172, 69);
+            this.lblInfoStillUnassigned.Location = new System.Drawing.Point(215, 69);
             this.lblInfoStillUnassigned.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblInfoStillUnassigned.Name = "lblInfoStillUnassigned";
             this.lblInfoStillUnassigned.Size = new System.Drawing.Size(101, 13);
@@ -574,7 +672,7 @@
             // 
             this.lblStudentsAssignedStep1Count.AutoSize = true;
             this.lblStudentsAssignedStep1Count.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lblStudentsAssignedStep1Count.Location = new System.Drawing.Point(266, 49);
+            this.lblStudentsAssignedStep1Count.Location = new System.Drawing.Point(320, 49);
             this.lblStudentsAssignedStep1Count.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblStudentsAssignedStep1Count.Name = "lblStudentsAssignedStep1Count";
             this.lblStudentsAssignedStep1Count.Size = new System.Drawing.Size(14, 13);
@@ -584,7 +682,7 @@
             // lblInfoAssignedStep1
             // 
             this.lblInfoAssignedStep1.AutoSize = true;
-            this.lblInfoAssignedStep1.Location = new System.Drawing.Point(172, 49);
+            this.lblInfoAssignedStep1.Location = new System.Drawing.Point(219, 49);
             this.lblInfoAssignedStep1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblInfoAssignedStep1.Name = "lblInfoAssignedStep1";
             this.lblInfoAssignedStep1.Size = new System.Drawing.Size(97, 13);
@@ -595,7 +693,7 @@
             // 
             this.lblStudentsToProcessCount.AutoSize = true;
             this.lblStudentsToProcessCount.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lblStudentsToProcessCount.Location = new System.Drawing.Point(131, 49);
+            this.lblStudentsToProcessCount.Location = new System.Drawing.Point(158, 49);
             this.lblStudentsToProcessCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblStudentsToProcessCount.Name = "lblStudentsToProcessCount";
             this.lblStudentsToProcessCount.Size = new System.Drawing.Size(14, 13);
@@ -621,6 +719,7 @@
             this.btnLoadDataForAssignment.TabIndex = 0;
             this.btnLoadDataForAssignment.Text = "Załaduj/Odśwież Dane";
             this.btnLoadDataForAssignment.UseVisualStyleBackColor = true;
+            this.btnLoadDataForAssignment.Click += new System.EventHandler(this.btnLoadDataForAssignment_Click);
             // 
             // btnAssignStep1
             // 
@@ -631,6 +730,7 @@
             this.btnAssignStep1.TabIndex = 1;
             this.btnAssignStep1.Text = "Krok 1: Pierwsza Preferencja";
             this.btnAssignStep1.UseVisualStyleBackColor = true;
+            this.btnAssignStep1.Click += new System.EventHandler(this.btnAssignStep1_Click);
             // 
             // btnAssignStep2Redistribute
             // 
@@ -641,6 +741,7 @@
             this.btnAssignStep2Redistribute.TabIndex = 2;
             this.btnAssignStep2Redistribute.Text = "Krok 2: Redystrybucja";
             this.btnAssignStep2Redistribute.UseVisualStyleBackColor = true;
+            this.btnAssignStep2Redistribute.Click += new System.EventHandler(this.btnAssignStep2Redistribute_Click);
             // 
             // btnConfirmAssignments
             // 
@@ -651,102 +752,7 @@
             this.btnConfirmAssignments.TabIndex = 3;
             this.btnConfirmAssignments.Text = "Zatwierdź i Zapisz Przydziały";
             this.btnConfirmAssignments.UseVisualStyleBackColor = true;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(20, 481);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(438, 49);
-            this.button1.TabIndex = 13;
-            this.button1.Text = "Odśwież";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click_1);
-            // 
-            // tabPage4
-            // 
-            this.tabPage4.Controls.Add(this.button5);
-            this.tabPage4.Controls.Add(this.dataGridView1);
-            this.tabPage4.Controls.Add(this.label6);
-            this.tabPage4.Controls.Add(this.label5);
-            this.tabPage4.Controls.Add(this.label4);
-            this.tabPage4.Controls.Add(this.comboBoxSpecialization1);
-            this.tabPage4.Controls.Add(this.comboBoxSpecialization2);
-            this.tabPage4.Controls.Add(this.comboBoxSpecialization3);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(1057, 558);
-            this.tabPage4.TabIndex = 3;
-            this.tabPage4.Text = "Specjalizacje studentów";
-            this.tabPage4.UseVisualStyleBackColor = true;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(29, 271);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(67, 13);
-            this.label6.TabIndex = 15;
-            this.label6.Text = "Trzeci wybór";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(29, 229);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(63, 13);
-            this.label5.TabIndex = 16;
-            this.label5.Text = "Drugi wybór";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(29, 183);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(79, 13);
-            this.label4.TabIndex = 17;
-            this.label4.Text = "Pierwszy wybór";
-            // 
-            // comboBoxSpecialization1
-            // 
-            this.comboBoxSpecialization1.FormattingEnabled = true;
-            this.comboBoxSpecialization1.Location = new System.Drawing.Point(185, 183);
-            this.comboBoxSpecialization1.Name = "comboBoxSpecialization1";
-            this.comboBoxSpecialization1.Size = new System.Drawing.Size(121, 21);
-            this.comboBoxSpecialization1.TabIndex = 12;
-            // 
-            // comboBoxSpecialization2
-            // 
-            this.comboBoxSpecialization2.FormattingEnabled = true;
-            this.comboBoxSpecialization2.Location = new System.Drawing.Point(186, 229);
-            this.comboBoxSpecialization2.Name = "comboBoxSpecialization2";
-            this.comboBoxSpecialization2.Size = new System.Drawing.Size(121, 21);
-            this.comboBoxSpecialization2.TabIndex = 13;
-            // 
-            // comboBoxSpecialization3
-            // 
-            this.comboBoxSpecialization3.FormattingEnabled = true;
-            this.comboBoxSpecialization3.Location = new System.Drawing.Point(186, 271);
-            this.comboBoxSpecialization3.Name = "comboBoxSpecialization3";
-            this.comboBoxSpecialization3.Size = new System.Drawing.Size(121, 21);
-            this.comboBoxSpecialization3.TabIndex = 14;
-            // 
-            // dataGridView1
-            // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(363, 45);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(676, 475);
-            this.dataGridView1.TabIndex = 18;
-            // 
-            // button5
-            // 
-            this.button5.Location = new System.Drawing.Point(32, 315);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(274, 68);
-            this.button5.TabIndex = 19;
-            this.button5.Text = "Przypisz";
-            this.button5.UseVisualStyleBackColor = true;
+            this.btnConfirmAssignments.Click += new System.EventHandler(this.btnConfirmAssignments_Click);
             // 
             // Form1
             // 
@@ -763,6 +769,9 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownAlbumNumber)).EndInit();
+            this.tabPage4.ResumeLayout(false);
+            this.tabPage4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.tabPage2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvStudentGrades)).EndInit();
             this.pnlGradeActions.ResumeLayout(false);
@@ -778,9 +787,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvGroupsPreview)).EndInit();
             this.pnlAssignmentControls.ResumeLayout(false);
             this.pnlAssignmentControls.PerformLayout();
-            this.tabPage4.ResumeLayout(false);
-            this.tabPage4.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
 
         }
