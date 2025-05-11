@@ -793,7 +793,7 @@
             // 
             this.lblStudentsToProcessCount.AutoSize = true;
             this.lblStudentsToProcessCount.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lblStudentsToProcessCount.Location = new System.Drawing.Point(131, 49);
+            this.lblStudentsToProcessCount.Location = new System.Drawing.Point(154, 49);
             this.lblStudentsToProcessCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblStudentsToProcessCount.Name = "lblStudentsToProcessCount";
             this.lblStudentsToProcessCount.Size = new System.Drawing.Size(14, 13);
