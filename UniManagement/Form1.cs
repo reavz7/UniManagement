@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic; // Dodane dla List
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Drawing; // Dodane dla Kolorów w logu (opcjonalnie)
-using System.Linq; // Dodane dla operacji LINQ
+using System.Drawing;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -13,17 +13,15 @@ namespace UniManagement
     {
         private string connectionString = "Data Source=FirstOne;Initial Catalog=UniManagement;Integrated Security=True;Encrypt=False";
         private SqlDataAdapter dataAdapter;
-        private DataSet dataSet;           
-        private BindingSource bindingSource;  
+        private DataSet dataSet;
+        private BindingSource bindingSource;
 
         private DataSet assignmentDataSet;
         private SqlDataAdapter studentsToAssignAdapter;
         private SqlDataAdapter specializationsAdapter;
         private SqlDataAdapter studentPreferencesAdapter;
-
         private BindingSource bsUnassignedStudents;
         private BindingSource bsGroupsPreview;
-
         private const string studentsToAssignTableName = "StudentsToAssign";
         private const string specializationsTableName = "Specializations";
         private const string studentPreferencesTableName = "StudentPreferences";
@@ -31,13 +29,28 @@ namespace UniManagement
         private const string tempAssignmentStatusColName = "AssignmentStatus_Temp";
 
 
+        private SqlDataAdapter studentsForGradesComboBoxAdapter;
+        private DataTable studentsForGradesDataTable;
+        private SqlDataAdapter studentSpecificGradesAdapter;
+        private DataTable studentGradesDataTable;
+        private BindingSource studentGradesBindingSource;
+        private SqlCommandBuilder studentGradesCommandBuilder;
+        private SqlDataAdapter subjectsAdapter;
+        private DataTable subjectsDataTable;
+        private bool tabPage2GradesInitialized = false;
+        private DataTable averageGradesDataTable;
+        private SqlDataAdapter averageGradesAdapter;
+
+
         public Form1()
         {
             InitializeComponent();
             InitializeDataComponents();
             InitializeAssignmentTabComponents();
-            LoadData();
+            LoadData(); // Ładuje "Studenci"
             SetupDataBindings();
+            InitializeGradesRelatedComponents();
+            SetupGradesTabEventHandlers();
         }
 
         private void InitializeDataComponents()
@@ -46,10 +59,13 @@ namespace UniManagement
             {
                 dataSet = new DataSet();
                 bindingSource = new BindingSource();
-                comboBoxStatus.Items.Add("Oczekujący");
-                comboBoxStatus.Items.Add("Zakwalifikowany");
-                comboBoxStatus.Items.Add("W trakcie rozpatrywania");
-                comboBoxStatus.DropDownStyle = ComboBoxStyle.DropDownList;
+                if (this.Controls.Find("comboBoxStatus", true).FirstOrDefault() is ComboBox cbStatus)
+                {
+                    cbStatus.Items.Add("Oczekujący");
+                    cbStatus.Items.Add("Zakwalifikowany");
+                    cbStatus.Items.Add("W trakcie rozpatrywania");
+                    cbStatus.DropDownStyle = ComboBoxStyle.DropDownList;
+                }
             }
             catch (Exception ex)
             {
@@ -61,32 +77,32 @@ namespace UniManagement
         {
             try
             {
-                if (dataSet.Tables.Contains("Students"))
+                if (dataSet.Tables.Contains("Studenci"))
                 {
-                    dataSet.Tables["Students"].Clear();
+                    dataSet.Tables["Studenci"].Clear();
                 }
 
-                SqlConnection connection = new SqlConnection(connectionString);
                 string query = "SELECT StudentID, NumerAlbumu, Imie, Nazwisko, Email, SpecjalizacjaID, SredniaOcenKwalifikacyjna, StatusKwalifikacji FROM Studenci";
-                dataAdapter = new SqlDataAdapter(query, connection);
+                dataAdapter = new SqlDataAdapter(query, connectionString);
 
                 SqlCommandBuilder commandBuilder = new SqlCommandBuilder(dataAdapter);
                 dataAdapter.InsertCommand = commandBuilder.GetInsertCommand();
                 dataAdapter.UpdateCommand = commandBuilder.GetUpdateCommand();
                 dataAdapter.DeleteCommand = commandBuilder.GetDeleteCommand();
 
-                dataAdapter.Fill(dataSet, "Students");
+                dataAdapter.Fill(dataSet, "Studenci");
 
-                if (dataSet.Tables["Students"].PrimaryKey.Length == 0 && dataSet.Tables["Students"].Columns.Contains("StudentID"))
+                if (dataSet.Tables["Studenci"].PrimaryKey.Length == 0 && dataSet.Tables["Studenci"].Columns.Contains("StudentID"))
                 {
-                    dataSet.Tables["Students"].PrimaryKey = new DataColumn[] { dataSet.Tables["Students"].Columns["StudentID"] };
+                    dataSet.Tables["Studenci"].PrimaryKey = new DataColumn[] { dataSet.Tables["Studenci"].Columns["StudentID"] };
                 }
 
-                bindingSource.DataSource = dataSet.Tables["Students"];
+                bindingSource.DataSource = dataSet;
+                bindingSource.DataMember = "Studenci";
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Błąd podczas wczytywania danych: {ex.Message}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Błąd podczas wczytywania danych studentów: {ex.Message}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -151,16 +167,16 @@ namespace UniManagement
                 if (EmailExists(email))
                 { MessageBox.Show("Student o podanym adresie email już istnieje w bazie danych!", "Duplikat", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
 
-                DataRow newRow = dataSet.Tables["Students"].NewRow();
+                DataRow newRow = dataSet.Tables["Studenci"].NewRow(); // Poprawka nazwy tabeli
                 newRow["NumerAlbumu"] = albumNumber;
                 newRow["Imie"] = textBoxName.Text;
                 newRow["Nazwisko"] = textBoxSurname.Text;
                 newRow["Email"] = email;
                 newRow["SpecjalizacjaID"] = DBNull.Value;
-                newRow["SredniaOcenKwalifikacyjna"] = DBNull.Value; 
+                newRow["SredniaOcenKwalifikacyjna"] = DBNull.Value;
                 newRow["StatusKwalifikacji"] = comboBoxStatus.SelectedItem?.ToString() ?? "Oczekujący";
-                dataSet.Tables["Students"].Rows.Add(newRow);
-                dataAdapter.Update(dataSet, "Students");
+                dataSet.Tables["Studenci"].Rows.Add(newRow); // Poprawka nazwy tabeli
+                dataAdapter.Update(dataSet, "Studenci"); // Poprawka nazwy tabeli
                 LoadData();
                 MessageBox.Show("Student został dodany pomyślnie!", "Sukces", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ClearFields();
@@ -191,9 +207,9 @@ namespace UniManagement
                 if (EmailExists(email, studentId))
                 { MessageBox.Show("Student o podanym adresie email już istnieje w bazie danych!", "Duplikat", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
 
-                bindingSource.EndEdit(); 
-                dataAdapter.Update(dataSet, "Students");
-                LoadData(); 
+                bindingSource.EndEdit();
+                dataAdapter.Update(dataSet, "Studenci"); // Poprawka nazwy tabeli
+                LoadData();
                 MessageBox.Show("Dane studenta zostały zaktualizowane pomyślnie!", "Sukces", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
@@ -211,21 +227,21 @@ namespace UniManagement
 
                 DataRowView currentRow = (DataRowView)bindingSource.Current;
                 currentRow.Delete();
-                dataAdapter.Update(dataSet, "Students");
+                dataAdapter.Update(dataSet, "Studenci"); // Poprawka nazwy tabeli
                 LoadData();
                 MessageBox.Show("Student został usunięty pomyślnie!", "Sukces", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ClearFields();
             }
-            catch (SqlException sqlEx) when (sqlEx.Number == 547) 
+            catch (SqlException sqlEx) when (sqlEx.Number == 547)
             {
                 MessageBox.Show($"Nie można usunąć studenta, ponieważ istnieją powiązane z nim dane (np. preferencje).\nNajpierw usuń powiązane dane.\n\nSzczegóły: {sqlEx.Message}", "Błąd usuwania", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                LoadData(); 
+                LoadData();
             }
             catch (Exception ex)
             { MessageBox.Show($"Błąd podczas usuwania studenta: {ex.Message}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
 
-        private void button1_Click_1(object sender, EventArgs e) 
+        private void button1_Click_1(object sender, EventArgs e)
         {
             LoadData();
             MessageBox.Show("Dane zostały odświeżone!", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -233,13 +249,15 @@ namespace UniManagement
 
         private bool EmailExists(string email, int? excludeStudentId = null)
         {
-            DataRow[] foundRows = dataSet.Tables["Students"].Select($"Email = '{email.Replace("'", "''")}'" + (excludeStudentId.HasValue ? $" AND StudentID <> {excludeStudentId.Value}" : ""));
+            // Poprawka nazwy tabeli
+            DataRow[] foundRows = dataSet.Tables["Studenci"].Select($"Email = '{email.Replace("'", "''")}'" + (excludeStudentId.HasValue ? $" AND StudentID <> {excludeStudentId.Value}" : ""));
             return foundRows.Length > 0;
         }
 
         private bool AlbumNumberExists(string albumNumber, int? excludeStudentId = null)
         {
-            DataRow[] foundRows = dataSet.Tables["Students"].Select($"NumerAlbumu = '{albumNumber}'" + (excludeStudentId.HasValue ? $" AND StudentID <> {excludeStudentId.Value}" : ""));
+            // Poprawka nazwy tabeli
+            DataRow[] foundRows = dataSet.Tables["Studenci"].Select($"NumerAlbumu = '{albumNumber}'" + (excludeStudentId.HasValue ? $" AND StudentID <> {excludeStudentId.Value}" : ""));
             return foundRows.Length > 0;
         }
 
@@ -262,15 +280,15 @@ namespace UniManagement
             comboBoxStatus.SelectedIndex = -1;
         }
 
-        
+
         private void panel2_Paint(object sender, PaintEventArgs e) { }
-        private void button1_Click(object sender, EventArgs e) { } 
+        private void button1_Click(object sender, EventArgs e) { }
         private void button2_Click(object sender, EventArgs e) { }
         private void button3_Click(object sender, EventArgs e) { }
         private void sortStudents1_Load(object sender, EventArgs e) { }
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e) { } 
-        private void dgvGroupsPreview_CellContentClick(object sender, DataGridViewCellEventArgs e) { } 
-        private void txtAssignmentLog_TextChanged(object sender, EventArgs e) { } 
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e) { }
+        private void dgvGroupsPreview_CellContentClick(object sender, DataGridViewCellEventArgs e) { }
+        private void txtAssignmentLog_TextChanged(object sender, EventArgs e) { }
 
         private void InitializeAssignmentTabComponents()
         {
@@ -280,7 +298,6 @@ namespace UniManagement
                 bsUnassignedStudents = new BindingSource();
                 bsGroupsPreview = new BindingSource();
 
-                // Konfiguracja dgvUnassignedStudents
                 dgvUnassignedStudents.AutoGenerateColumns = false;
                 dgvUnassignedStudents.Columns.Clear();
                 dgvUnassignedStudents.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "StudentID", HeaderText = "ID", Width = 50, ReadOnly = true });
@@ -290,16 +307,14 @@ namespace UniManagement
                 dgvUnassignedStudents.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = tempAssignmentStatusColName, HeaderText = "Status Przypisania", Width = 150, ReadOnly = true });
                 dgvUnassignedStudents.DataSource = bsUnassignedStudents;
 
-                // Konfiguracja dgvGroupsPreview
                 dgvGroupsPreview.AutoGenerateColumns = false;
                 dgvGroupsPreview.Columns.Clear();
                 dgvGroupsPreview.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "NazwaSpecjalizacji", HeaderText = "Specjalizacja", Width = 200, ReadOnly = true });
                 dgvGroupsPreview.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "LimitMiejsc", HeaderText = "Limit", Width = 60, ReadOnly = true });
                 dgvGroupsPreview.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "AktualnieZajeteMiejsca", HeaderText = "Zajęte", Width = 60, ReadOnly = true });
-                dgvGroupsPreview.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "WolneMiejsca", HeaderText = "Wolne", Width = 60, ReadOnly = true }); // Ta kolumna zostanie dodana jako Expression
+                dgvGroupsPreview.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "WolneMiejsca", HeaderText = "Wolne", Width = 60, ReadOnly = true });
                 dgvGroupsPreview.DataSource = bsGroupsPreview;
 
-                // Ustawienie początkowych wartości liczników
                 lblStudentsToProcessCount.Text = "0";
                 lblStudentsAssignedStep1Count.Text = "0";
                 lblStudentsAssignedStep2Count.Text = "0";
@@ -320,14 +335,14 @@ namespace UniManagement
             {
                 logBox.AppendText($"{DateTime.Now:G}: {message}{Environment.NewLine}");
             }
-            else if (tcAssignmentResults != null && tpAssignmentLog != null && txtAssignmentLog != null) 
+            else if (tcAssignmentResults != null && tpAssignmentLog != null && txtAssignmentLog != null)
             {
                 txtAssignmentLog.AppendText($"{DateTime.Now:G}: {message}{Environment.NewLine}");
             }
 
         }
 
-       
+
         private void btnLoadDataForAssignment_Click(object sender, EventArgs e)
         {
             try
@@ -336,15 +351,13 @@ namespace UniManagement
                 if (assignmentDataSet == null) assignmentDataSet = new DataSet("AssignmentData");
                 assignmentDataSet.Clear();
 
-                // 1. Wczytaj studentów do przypisania
-                // Ten adapter jest używany tylko do wypełnienia, więc może być lokalny.
                 using (SqlConnection connStdToAssign = new SqlConnection(connectionString))
                 {
                     string studentsQuery = @"
-                        SELECT StudentID, NumerAlbumu, Imie, Nazwisko, SredniaOcenKwalifikacyjna, StatusKwalifikacji 
-                        FROM Studenci 
+                        SELECT StudentID, NumerAlbumu, Imie, Nazwisko, SredniaOcenKwalifikacyjna, StatusKwalifikacji
+                        FROM Studenci
                         WHERE (SpecjalizacjaID IS NULL OR StatusKwalifikacji = 'Oczekujący' OR StatusKwalifikacji = 'W trakcie rozpatrywania')
-                              AND SredniaOcenKwalifikacyjna IS NOT NULL 
+                              AND SredniaOcenKwalifikacyjna IS NOT NULL
                         ORDER BY SredniaOcenKwalifikacyjna DESC, Nazwisko ASC, Imie ASC;";
                     studentsToAssignAdapter = new SqlDataAdapter(studentsQuery, connStdToAssign);
                     studentsToAssignAdapter.Fill(assignmentDataSet, studentsToAssignTableName);
@@ -370,7 +383,7 @@ namespace UniManagement
                     row[tempAssignmentStatusColName] = "Oczekujący na przypisanie";
                 }
 
-                
+
                 string specsQuery = "SELECT SpecjalizacjaID, NazwaSpecjalizacji, LimitMiejsc, MinimalnaSredniaOgólna, AktualnieZajeteMiejsca FROM Specjalizacje ORDER BY NazwaSpecjalizacji;";
 
                 specializationsAdapter = new SqlDataAdapter();
@@ -535,7 +548,15 @@ namespace UniManagement
             {
                 AppendToLog("Rozpoczęto zatwierdzanie przypisań...");
                 DataTable dtStudentsToAssign = assignmentDataSet.Tables[studentsToAssignTableName];
-                DataTable dtMainStudents = dataSet.Tables["Students"];
+                DataTable dtMainStudents = dataSet.Tables["Studenci"]; // Poprawka nazwy tabeli
+
+                if (dtMainStudents == null) // Dodatkowe sprawdzenie dla bezpieczeństwa
+                {
+                    AppendToLog("BŁĄD KRYTYCZNY: Główna tabela studentów ('Studenci') nie została znaleziona w DataSet.");
+                    MessageBox.Show("Błąd krytyczny: brak tabeli studentów do aktualizacji.", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
 
                 foreach (DataRow assignedStudentRow in dtStudentsToAssign.Rows)
                 {
@@ -548,7 +569,7 @@ namespace UniManagement
                         if (tempStatus.Contains("Krok 1")) finalStatus = "Zakwalifikowany (Krok 1)";
                         else if (tempStatus.Contains("Krok 2")) finalStatus = "Zakwalifikowany (Krok 2)";
 
-                        DataRow mainStudentRow = dtMainStudents.Rows.Find(studentId);
+                        DataRow mainStudentRow = dtMainStudents.Rows.Find(studentId); // To powinno teraz działać
                         if (mainStudentRow != null)
                         {
                             mainStudentRow["SpecjalizacjaID"] = specializationId;
@@ -571,7 +592,7 @@ namespace UniManagement
                         if (assignmentDataSet.HasChanges()) assignmentDataSet.RejectChanges();
                         return;
                     }
-                    int actualStudentsUpdatedInDb = dataAdapter.Update(dataSet, "Students");
+                    int actualStudentsUpdatedInDb = dataAdapter.Update(dataSet, "Studenci"); // Poprawka nazwy tabeli
                     AppendToLog($"Zaktualizowano {actualStudentsUpdatedInDb} wierszy studentów w bazie danych.");
                     dataSet.AcceptChanges();
                 }
@@ -651,5 +672,525 @@ namespace UniManagement
             AppendToLog("Zaktualizowano liczniki i widoki.");
         }
 
+        // Page 3 - KONIEC
+
+        // Page 2
+
+        private void InitializeGradesRelatedComponents()
+        {
+            try
+            {
+                studentsForGradesDataTable = new DataTable("StudentsForGradesCombo");
+                studentGradesDataTable = new DataTable("StudentGradesDetails");
+                studentGradesBindingSource = new BindingSource { DataSource = studentGradesDataTable };
+                dgvStudentGrades.DataSource = studentGradesBindingSource;
+                subjectsDataTable = new DataTable("Subjects");
+                averageGradesDataTable = new DataTable("AverageGrades");
+                dgvAverageGrades.DataSource = averageGradesDataTable;
+
+                ConfigureDgvStudentGrades();
+                ConfigureDgvAverageGrades();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Błąd podczas inicjalizacji komponentów dla zakładki ocen: {ex.Message}", "Błąd inicjalizacji", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void SetupGradesTabEventHandlers()
+        {
+            tabControl1.SelectedIndexChanged += TabControl1_SelectedIndexChanged_GradesInit;
+            cmbStudentSelectorGrades.SelectedIndexChanged += CmbStudentSelectorGrades_SelectedIndexChanged;
+            btnAddGrade.Click += BtnAddGrade_Click;
+            btnDeleteGrade.Click += BtnDeleteGrade_Click;
+            btnSaveGrades.Click += BtnSaveGrades_Click;
+            dgvStudentGrades.CellValidating += DgvStudentGrades_CellValidating;
+            btnCalculateAverageGrades.Click += BtnCalculateAverageGrades_Click;
+        }
+
+        private void TabControl1_SelectedIndexChanged_GradesInit(object sender, EventArgs e)
+        {
+            if (tabControl1.SelectedTab == tabPage2 && !tabPage2GradesInitialized)
+            {
+                LoadStudentsToGradesComboBox();
+                LoadSubjects();
+                tabPage2GradesInitialized = true;
+            }
+        }
+
+        private void LoadStudentsToGradesComboBox()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    string query = "SELECT StudentID, Imie, Nazwisko, NumerAlbumu FROM Studenci ORDER BY Nazwisko, Imie";
+                    studentsForGradesComboBoxAdapter = new SqlDataAdapter(query, conn);
+                    studentsForGradesDataTable.Clear();
+                    studentsForGradesComboBoxAdapter.Fill(studentsForGradesDataTable);
+                }
+
+                if (!studentsForGradesDataTable.Columns.Contains("DisplayMember"))
+                {
+                    studentsForGradesDataTable.Columns.Add("DisplayMember", typeof(string), "Imie + ' ' + Nazwisko + ' (' + NumerAlbumu + ')'");
+                }
+
+                cmbStudentSelectorGrades.DataSource = studentsForGradesDataTable;
+                cmbStudentSelectorGrades.DisplayMember = "DisplayMember";
+                cmbStudentSelectorGrades.ValueMember = "StudentID";
+                cmbStudentSelectorGrades.SelectedIndex = -1;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Błąd ładowania listy studentów: {ex.Message}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void LoadSubjects()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    string query = "SELECT PrzedmiotID, NazwaPrzedmiotu FROM Przedmioty ORDER BY NazwaPrzedmiotu";
+                    subjectsAdapter = new SqlDataAdapter(query, conn);
+                    subjectsDataTable.Clear();
+                    subjectsAdapter.Fill(subjectsDataTable);
+
+                    if (subjectsDataTable.PrimaryKey.Length == 0 && subjectsDataTable.Columns.Contains("PrzedmiotID"))
+                    {
+                        subjectsDataTable.PrimaryKey = new DataColumn[] { subjectsDataTable.Columns["PrzedmiotID"] };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Błąd ładowania listy przedmiotów: {ex.Message}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void CmbStudentSelectorGrades_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbStudentSelectorGrades.SelectedValue != null && cmbStudentSelectorGrades.SelectedValue is int)
+            {
+                int selectedStudentId = (int)cmbStudentSelectorGrades.SelectedValue;
+                LoadStudentGrades(selectedStudentId);
+            }
+            else
+            {
+                studentGradesDataTable.Clear();
+                studentSpecificGradesAdapter = null;
+            }
+        }
+
+        private void LoadStudentGrades(int studentId)
+        {
+            try
+            {
+                string displayQuery = @"
+                    SELECT OS.OcenaID, OS.StudentID, OS.PrzedmiotID, P.NazwaPrzedmiotu, OS.WartoscOceny
+                    FROM OcenyStudentow OS
+                    INNER JOIN Przedmioty P ON OS.PrzedmiotID = P.PrzedmiotID
+                    WHERE OS.StudentID = @StudentID_Display";
+
+                studentGradesDataTable.Clear();
+
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    using (SqlDataAdapter displayAdapter = new SqlDataAdapter(displayQuery, conn))
+                    {
+                        displayAdapter.SelectCommand.Parameters.AddWithValue("@StudentID_Display", studentId);
+                        displayAdapter.Fill(studentGradesDataTable);
+                    }
+                }
+
+                // Poprawka dla Błędu 1: Konfiguracja AutoIncrement dla OcenaID
+                if (studentGradesDataTable.Columns.Contains("OcenaID"))
+                {
+                    DataColumn ocenaIdCol = studentGradesDataTable.Columns["OcenaID"];
+                    if (!ocenaIdCol.AutoIncrement)
+                    {
+                        ocenaIdCol.AutoIncrement = true;
+                        ocenaIdCol.AutoIncrementSeed = -1;
+                        ocenaIdCol.AutoIncrementStep = -1;
+                        // Upewnij się, że AllowDBNull jest false jeśli to klucz główny, AutoIncrement to załatwia
+                        // ocenaIdCol.AllowDBNull = false; // Usuń, jeśli AutoIncrement i PrimaryKey to ustawią
+                    }
+                    if (studentGradesDataTable.PrimaryKey.Length == 0 ||
+                        (studentGradesDataTable.PrimaryKey.Length > 0 && studentGradesDataTable.PrimaryKey[0] != ocenaIdCol))
+                    {
+                        studentGradesDataTable.PrimaryKey = new DataColumn[] { ocenaIdCol };
+                    }
+                }
+
+
+                // Poprawka dla Błędu 2: Konfiguracja adaptera do ZAPISU (studentSpecificGradesAdapter)
+                string crudQuery = "SELECT OcenaID, StudentID, PrzedmiotID, WartoscOceny FROM OcenyStudentow WHERE StudentID = @StudentID_CRUD";
+                studentSpecificGradesAdapter = new SqlDataAdapter();
+
+                // Utwórz SelectCommand z NOWYM obiektem SqlConnection
+                SqlCommand selectCmdForBuilder = new SqlCommand(crudQuery, new SqlConnection(connectionString));
+                selectCmdForBuilder.Parameters.AddWithValue("@StudentID_CRUD", studentId);
+                studentSpecificGradesAdapter.SelectCommand = selectCmdForBuilder;
+
+                studentGradesCommandBuilder = new SqlCommandBuilder(studentSpecificGradesAdapter);
+                studentSpecificGradesAdapter.InsertCommand = studentGradesCommandBuilder.GetInsertCommand();
+                studentSpecificGradesAdapter.UpdateCommand = studentGradesCommandBuilder.GetUpdateCommand();
+                studentSpecificGradesAdapter.DeleteCommand = studentGradesCommandBuilder.GetDeleteCommand();
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Błąd ładowania ocen studenta: {ex.Message}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                studentGradesDataTable.Clear();
+            }
+            finally
+            {
+                studentGradesBindingSource.ResetBindings(false);
+            }
+        }
+
+        private void ConfigureDgvStudentGrades()
+        {
+            dgvStudentGrades.AutoGenerateColumns = false;
+            dgvStudentGrades.Columns.Clear();
+
+            dgvStudentGrades.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "colNazwaPrzedmiotu",
+                HeaderText = "Nazwa Przedmiotu",
+                DataPropertyName = "NazwaPrzedmiotu",
+                ReadOnly = true,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+            });
+            dgvStudentGrades.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "colWartoscOceny",
+                HeaderText = "Ocena",
+                DataPropertyName = "WartoscOceny",
+                ReadOnly = false,
+                DefaultCellStyle = new DataGridViewCellStyle { Format = "N1" }
+            });
+            string[] hiddenCols = { "OcenaID", "StudentID", "PrzedmiotID" };
+            foreach (var colName in hiddenCols)
+            {
+                dgvStudentGrades.Columns.Add(new DataGridViewTextBoxColumn { Name = "col" + colName, DataPropertyName = colName, Visible = false });
+            }
+            dgvStudentGrades.AllowUserToAddRows = false;
+            dgvStudentGrades.AllowUserToDeleteRows = false;
+        }
+
+        private void DgvStudentGrades_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+        {
+            if (dgvStudentGrades.Columns[e.ColumnIndex].Name == "colWartoscOceny")
+            {
+                dgvStudentGrades.Rows[e.RowIndex].ErrorText = "";
+                if (e.FormattedValue == null || string.IsNullOrWhiteSpace(e.FormattedValue.ToString()))
+                {
+                    dgvStudentGrades.Rows[e.RowIndex].ErrorText = "Wartość oceny nie może być pusta.";
+                    e.Cancel = true; return;
+                }
+                if (decimal.TryParse(e.FormattedValue.ToString().Replace(",", "."),
+                    System.Globalization.NumberStyles.Any,
+                    System.Globalization.CultureInfo.InvariantCulture, out decimal gradeValue))
+                {
+                    decimal[] validGrades = { 2.0m, 2.5m, 3.0m, 3.5m, 4.0m, 4.5m, 5.0m };
+                    if (!validGrades.Contains(gradeValue))
+                    {
+                        dgvStudentGrades.Rows[e.RowIndex].ErrorText = "Nieprawidłowa ocena. Dopuszczalne: 2.0, 2.5,..., 5.0.";
+                        e.Cancel = true;
+                    }
+                }
+                else
+                {
+                    dgvStudentGrades.Rows[e.RowIndex].ErrorText = "Wartość oceny musi być liczbą.";
+                    e.Cancel = true;
+                }
+            }
+        }
+
+        private void BtnAddGrade_Click(object sender, EventArgs e)
+        {
+            if (cmbStudentSelectorGrades.SelectedValue == null || !(cmbStudentSelectorGrades.SelectedValue is int currentStudentId))
+            {
+                MessageBox.Show("Proszę wybrać studenta.", "Brak studenta", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (subjectsDataTable == null || subjectsDataTable.Rows.Count == 0)
+            {
+                MessageBox.Show("Brak załadowanych przedmiotów. Nie można dodać oceny.", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            using (var addGradeForm = new AddGradeForm(subjectsDataTable.Copy()))
+            {
+                if (addGradeForm.ShowDialog(this) == DialogResult.OK)
+                {
+                    int subjectId = addGradeForm.SelectedSubjectId;
+                    decimal gradeValue = addGradeForm.SelectedGradeValue;
+
+                    bool gradeExists = studentGradesDataTable.AsEnumerable()
+                        .Any(row => row.RowState != DataRowState.Deleted &&
+                                    row.Field<int>("StudentID") == currentStudentId &&
+                                    row.Field<int>("PrzedmiotID") == subjectId);
+                    if (gradeExists)
+                    {
+                        MessageBox.Show("Student ma już ocenę z wybranego przedmiotu.", "Ocena już istnieje", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    try
+                    {
+                        DataRow newRow = studentGradesDataTable.NewRow();
+                        // OcenaID zostanie przypisana przez AutoIncrement (-1, -2 itd.) lokalnie.
+                        // Baza danych nada właściwe ID podczas zapisu.
+                        newRow["StudentID"] = currentStudentId;
+                        newRow["PrzedmiotID"] = subjectId;
+                        newRow["WartoscOceny"] = gradeValue;
+                        DataRow subjectInfoRow = subjectsDataTable.Rows.Find(subjectId);
+                        newRow["NazwaPrzedmiotu"] = subjectInfoRow?["NazwaPrzedmiotu"]?.ToString() ?? "Brak nazwy";
+
+                        studentGradesDataTable.Rows.Add(newRow);
+                        MessageBox.Show("Ocena dodana lokalnie. Kliknij 'Zapisz Zmiany'.", "Dodano", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Błąd dodawania oceny lokalnie: {ex.Message}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private void BtnDeleteGrade_Click(object sender, EventArgs e)
+        {
+            if (dgvStudentGrades.CurrentRow == null || dgvStudentGrades.CurrentRow.IsNewRow)
+            {
+                MessageBox.Show("Proszę zaznaczyć ocenę do usunięcia.", "Brak zaznaczenia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (MessageBox.Show("Czy na pewno chcesz usunąć wybraną ocenę?", "Potwierdzenie", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                try
+                {
+                    ((DataRowView)dgvStudentGrades.CurrentRow.DataBoundItem).Row.Delete();
+                    MessageBox.Show("Ocena oznaczona do usunięcia. Kliknij 'Zapisz Zmiany'.", "Usunięto", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Błąd oznaczania oceny do usunięcia: {ex.Message}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void BtnSaveGrades_Click(object sender, EventArgs e)
+        {
+            if (cmbStudentSelectorGrades.SelectedValue == null || !(cmbStudentSelectorGrades.SelectedValue is int currentStudentId))
+            {
+                MessageBox.Show("Żaden student nie jest wybrany.", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Warning); return;
+            }
+            if (studentSpecificGradesAdapter == null || studentSpecificGradesAdapter.SelectCommand == null) // Dodatkowe sprawdzenie
+            {
+                MessageBox.Show("Adapter zapisu ocen nie jest gotowy. Proszę ponownie wybrać studenta.", "Błąd krytyczny", MessageBoxButtons.OK, MessageBoxIcon.Error); return;
+            }
+            try
+            {
+                this.Validate();
+                studentGradesBindingSource.EndEdit();
+
+                DataTable changes = studentGradesDataTable.GetChanges();
+                if (changes == null || changes.Rows.Count == 0)
+                {
+                    MessageBox.Show("Brak zmian do zapisania.", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information); return;
+                }
+
+                int rowsAffected = studentSpecificGradesAdapter.Update(changes);
+                studentGradesDataTable.AcceptChanges();
+
+                MessageBox.Show($"Zapisano {rowsAffected} zmian w ocenach.", "Zapisano", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                LoadStudentGrades(currentStudentId);
+            }
+            catch (DBConcurrencyException dbcex)
+            {
+                MessageBox.Show($"Konflikt współbieżności: {dbcex.Message}", "Konflikt", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                studentGradesDataTable.RejectChanges();
+                LoadStudentGrades(currentStudentId);
+            }
+            catch (SqlException sqlEx)
+            {
+                MessageBox.Show($"Błąd SQL ({sqlEx.Number}): {sqlEx.Message}\n{sqlEx.StackTrace}", "Błąd SQL", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                studentGradesDataTable.RejectChanges();
+                // Możesz chcieć ponownie załadować oceny, aby przywrócić stan z bazy danych
+                LoadStudentGrades(currentStudentId);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ogólny błąd zapisu ocen: {ex.Message}\n{ex.StackTrace}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                studentGradesDataTable.RejectChanges();
+                // Możesz chcieć ponownie załadować oceny
+                LoadStudentGrades(currentStudentId);
+            }
+        }
+
+
+        private void ConfigureDgvAverageGrades()
+        {
+            dgvAverageGrades.AutoGenerateColumns = false;
+            dgvAverageGrades.Columns.Clear();
+            string[] headers = { "Numer Albumu", "Imię", "Nazwisko", "Obliczona Średnia" };
+            string[] props = { "NumerAlbumu", "Imie", "Nazwisko", "ObliczonaSrednia" };
+            for (int i = 0; i < headers.Length; i++)
+            {
+                var col = new DataGridViewTextBoxColumn { HeaderText = headers[i], DataPropertyName = props[i], Name = "colAvg" + props[i] };
+                if (props[i] == "ObliczonaSrednia") col.DefaultCellStyle.Format = "N2";
+                col.AutoSizeMode = (props[i] == "Nazwisko" || props[i] == "Imie") ? DataGridViewAutoSizeColumnMode.Fill : DataGridViewAutoSizeColumnMode.AllCells;
+                dgvAverageGrades.Columns.Add(col);
+            }
+            dgvAverageGrades.ReadOnly = true;
+            dgvAverageGrades.AllowUserToAddRows = false;
+        }
+
+        private void BtnCalculateAverageGrades_Click(object sender, EventArgs e) => CalculateAndDisplayAverages();
+
+        private void CalculateAndDisplayAverages()
+        {
+            try
+            {
+                string query = @"
+                    SELECT S.StudentID, S.NumerAlbumu, S.Imie, S.Nazwisko, AVG(CAST(OS.WartoscOceny AS DECIMAL(4,2))) AS ObliczonaSrednia
+                    FROM Studenci S JOIN OcenyStudentow OS ON S.StudentID = OS.StudentID
+                    GROUP BY S.StudentID, S.NumerAlbumu, S.Imie, S.Nazwisko
+                    HAVING COUNT(OS.OcenaID) > 0 ORDER BY S.Nazwisko, S.Imie;";
+                averageGradesAdapter = new SqlDataAdapter(query, connectionString);
+                averageGradesDataTable.Clear();
+                averageGradesAdapter.Fill(averageGradesDataTable);
+
+                if (averageGradesDataTable.Rows.Count > 0 &&
+                    MessageBox.Show("Czy zaktualizować 'Średnią Ocen Kwalifikacyjną' w tabeli Studenci?",
+                                    "Aktualizacja średnich", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    UpdateStudentAveragesInDatabase();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Błąd obliczania średnich: {ex.Message}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void UpdateStudentAveragesInDatabase()
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                using (SqlTransaction trans = conn.BeginTransaction())
+                {
+                    int updatedCount = 0;
+                    try
+                    {
+                        foreach (DataRow row in averageGradesDataTable.Rows)
+                        {
+                            using (SqlCommand cmd = new SqlCommand("UPDATE Studenci SET SredniaOcenKwalifikacyjna = @Srednia WHERE StudentID = @StudentID", conn, trans))
+                            {
+                                cmd.Parameters.AddWithValue("@Srednia", row["ObliczonaSrednia"]);
+                                cmd.Parameters.AddWithValue("@StudentID", row["StudentID"]);
+                                cmd.ExecuteNonQuery();
+                                updatedCount++;
+                            }
+                        }
+                        trans.Commit();
+                        MessageBox.Show($"Zaktualizowano średnie dla {updatedCount} studentów.", "Sukces", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        LoadData();
+                    }
+                    catch (Exception ex)
+                    {
+                        trans.Rollback();
+                        MessageBox.Show($"Błąd aktualizacji średnich w bazie: {ex.Message}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private void btnCalculateAverageGrades_Click_1(object sender, EventArgs e)
+        {
+            LoadData();
+        }
+    }
+
+    public class AddGradeForm : Form
+    {
+        public int SelectedSubjectId { get; private set; }
+        public decimal SelectedGradeValue { get; private set; }
+
+        private ComboBox cmbSubjects;
+        private NumericUpDown nudGradeValue;
+        private Button btnOk;
+        private Button btnCancel;
+        private DataTable localSubjectsTable;
+
+        public AddGradeForm(DataTable subjects)
+        {
+            this.localSubjectsTable = subjects;
+            InitializeFormComponents();
+            LoadSubjectsIntoComboBox();
+        }
+
+        private void InitializeFormComponents()
+        {
+            this.Text = "Dodaj Ocenę";
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.StartPosition = FormStartPosition.CenterParent;
+            this.ClientSize = new Size(350, 150);
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+
+            Label lblSubject = new Label { Text = "Przedmiot:", Location = new Point(10, 20), AutoSize = true };
+            cmbSubjects = new ComboBox { Location = new Point(100, 17), Width = 230, DropDownStyle = ComboBoxStyle.DropDownList };
+
+            Label lblGrade = new Label { Text = "Ocena:", Location = new Point(10, 55), AutoSize = true };
+            nudGradeValue = new NumericUpDown
+            {
+                Location = new Point(100, 52),
+                Width = 100,
+                Minimum = 2.0m,
+                Maximum = 5.0m,
+                Increment = 0.5m,
+                DecimalPlaces = 1,
+                Value = 3.0m
+            };
+
+            btnOk = new Button { Text = "OK", Location = new Point(170, 100), DialogResult = DialogResult.OK };
+            btnCancel = new Button { Text = "Anuluj", Location = new Point(250, 100), DialogResult = DialogResult.Cancel };
+
+            btnOk.Click += (s, e) => {
+                if (cmbSubjects.SelectedValue != null)
+                {
+                    SelectedSubjectId = (int)cmbSubjects.SelectedValue;
+                    SelectedGradeValue = nudGradeValue.Value;
+                }
+                else
+                {
+                    MessageBox.Show("Proszę wybrać przedmiot.", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    this.DialogResult = DialogResult.None;
+                }
+            };
+
+            this.Controls.AddRange(new Control[] { lblSubject, cmbSubjects, lblGrade, nudGradeValue, btnOk, btnCancel });
+            this.AcceptButton = btnOk;
+            this.CancelButton = btnCancel;
+        }
+
+        private void LoadSubjectsIntoComboBox()
+        {
+            if (localSubjectsTable != null && localSubjectsTable.Rows.Count > 0)
+            {
+                cmbSubjects.DataSource = localSubjectsTable;
+                cmbSubjects.DisplayMember = "NazwaPrzedmiotu";
+                cmbSubjects.ValueMember = "PrzedmiotID";
+                if (localSubjectsTable.Rows.Count > 0) cmbSubjects.SelectedIndex = 0;
+            }
+            else
+            {
+                cmbSubjects.Enabled = false;
+            }
+        }
     }
 }

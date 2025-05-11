@@ -95,7 +95,6 @@
             this.btnAssignStep1 = new System.Windows.Forms.Button();
             this.btnAssignStep2Redistribute = new System.Windows.Forms.Button();
             this.btnConfirmAssignments = new System.Windows.Forms.Button();
-
             ((System.ComponentModel.ISupportInitialize)(this.studentsDataGridView)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -103,7 +102,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownAlbumNumber)).BeginInit();
             this.tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-
             this.tabPage2.SuspendLayout();
             this.tcGradesPage.SuspendLayout();
             this.tpManageStudentGrades.SuspendLayout();
@@ -113,7 +111,6 @@
             this.tpAverageGradesSummary.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvAverageGrades)).BeginInit();
             this.pnlAverageCalculation.SuspendLayout();
-
             this.tabPage3.SuspendLayout();
             this.tcAssignmentResults.SuspendLayout();
             this.tpUnassignedStudents.SuspendLayout();
@@ -527,7 +524,7 @@
             // 
             // cmbStudentSelectorGrades
             // 
-            this.cmbStudentSelectorGrades.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.cmbStudentSelectorGrades.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbStudentSelectorGrades.DisplayMember = "StudentID";
             this.cmbStudentSelectorGrades.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -602,7 +599,7 @@
             this.btnCalculateAverageGrades.TabIndex = 0;
             this.btnCalculateAverageGrades.Text = "Oblicz i Wyświetl Średnie";
             this.btnCalculateAverageGrades.UseVisualStyleBackColor = true;
-            // this.btnCalculateAverageGrades.Click += new System.EventHandler(this.btnCalculateAverageGrades_Click); // Handler do dodania później
+            this.btnCalculateAverageGrades.Click += new System.EventHandler(this.btnCalculateAverageGrades_Click_1);
             // 
             // tabPage3
             // 
@@ -733,7 +730,7 @@
             // 
             this.lblStudentsStillUnassignedCount.AutoSize = true;
             this.lblStudentsStillUnassignedCount.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lblStudentsStillUnassignedCount.Location = new System.Drawing.Point(270, 69); // Zaktualizowane z 320 na 270 jak w drugim pliku
+            this.lblStudentsStillUnassignedCount.Location = new System.Drawing.Point(270, 69);
             this.lblStudentsStillUnassignedCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblStudentsStillUnassignedCount.Name = "lblStudentsStillUnassignedCount";
             this.lblStudentsStillUnassignedCount.Size = new System.Drawing.Size(14, 13);
@@ -743,7 +740,7 @@
             // lblInfoStillUnassigned
             // 
             this.lblInfoStillUnassigned.AutoSize = true;
-            this.lblInfoStillUnassigned.Location = new System.Drawing.Point(172, 69); // Zaktualizowane z 215 na 172
+            this.lblInfoStillUnassigned.Location = new System.Drawing.Point(172, 69);
             this.lblInfoStillUnassigned.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblInfoStillUnassigned.Name = "lblInfoStillUnassigned";
             this.lblInfoStillUnassigned.Size = new System.Drawing.Size(101, 13);
@@ -775,7 +772,7 @@
             // 
             this.lblStudentsAssignedStep1Count.AutoSize = true;
             this.lblStudentsAssignedStep1Count.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lblStudentsAssignedStep1Count.Location = new System.Drawing.Point(266, 49); // Zaktualizowane z 320 na 266
+            this.lblStudentsAssignedStep1Count.Location = new System.Drawing.Point(266, 49);
             this.lblStudentsAssignedStep1Count.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblStudentsAssignedStep1Count.Name = "lblStudentsAssignedStep1Count";
             this.lblStudentsAssignedStep1Count.Size = new System.Drawing.Size(14, 13);
@@ -785,7 +782,7 @@
             // lblInfoAssignedStep1
             // 
             this.lblInfoAssignedStep1.AutoSize = true;
-            this.lblInfoAssignedStep1.Location = new System.Drawing.Point(172, 49); // Zaktualizowane z 219 na 172
+            this.lblInfoAssignedStep1.Location = new System.Drawing.Point(172, 49);
             this.lblInfoAssignedStep1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblInfoAssignedStep1.Name = "lblInfoAssignedStep1";
             this.lblInfoAssignedStep1.Size = new System.Drawing.Size(97, 13);
@@ -796,7 +793,7 @@
             // 
             this.lblStudentsToProcessCount.AutoSize = true;
             this.lblStudentsToProcessCount.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lblStudentsToProcessCount.Location = new System.Drawing.Point(131, 49); // Zaktualizowane z 158 na 131
+            this.lblStudentsToProcessCount.Location = new System.Drawing.Point(131, 49);
             this.lblStudentsToProcessCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblStudentsToProcessCount.Name = "lblStudentsToProcessCount";
             this.lblStudentsToProcessCount.Size = new System.Drawing.Size(14, 13);
@@ -875,18 +872,16 @@
             this.tabPage4.ResumeLayout(false);
             this.tabPage4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-
+            this.tabPage2.ResumeLayout(false);
+            this.tcGradesPage.ResumeLayout(false);
+            this.tpManageStudentGrades.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvStudentGrades)).EndInit();
+            this.pnlGradeActions.ResumeLayout(false);
             this.pnlStudentSelection.ResumeLayout(false);
             this.pnlStudentSelection.PerformLayout();
-            this.pnlGradeActions.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvStudentGrades)).EndInit();
-            this.tpManageStudentGrades.ResumeLayout(false);
-            this.pnlAverageCalculation.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvAverageGrades)).EndInit();
             this.tpAverageGradesSummary.ResumeLayout(false);
-            this.tcGradesPage.ResumeLayout(false);
-            this.tabPage2.ResumeLayout(false);
-
+            ((System.ComponentModel.ISupportInitialize)(this.dgvAverageGrades)).EndInit();
+            this.pnlAverageCalculation.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             this.tcAssignmentResults.ResumeLayout(false);
             this.tpUnassignedStudents.ResumeLayout(false);
