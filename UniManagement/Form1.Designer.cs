@@ -28,8 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.studentsDataGridView = new System.Windows.Forms.DataGridView();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -58,6 +60,8 @@
             this.comboBoxSpecialization2 = new System.Windows.Forms.ComboBox();
             this.comboBoxSpecialization3 = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.tcGradesPage = new System.Windows.Forms.TabControl();
+            this.tpManageStudentGrades = new System.Windows.Forms.TabPage();
             this.dgvStudentGrades = new System.Windows.Forms.DataGridView();
             this.pnlGradeActions = new System.Windows.Forms.Panel();
             this.btnAddGrade = new System.Windows.Forms.Button();
@@ -66,6 +70,10 @@
             this.pnlStudentSelection = new System.Windows.Forms.Panel();
             this.lblStudentSelectionGrades = new System.Windows.Forms.Label();
             this.cmbStudentSelectorGrades = new System.Windows.Forms.ComboBox();
+            this.tpAverageGradesSummary = new System.Windows.Forms.TabPage();
+            this.dgvAverageGrades = new System.Windows.Forms.DataGridView();
+            this.pnlAverageCalculation = new System.Windows.Forms.Panel();
+            this.btnCalculateAverageGrades = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.tcAssignmentResults = new System.Windows.Forms.TabControl();
             this.tpUnassignedStudents = new System.Windows.Forms.TabPage();
@@ -87,6 +95,7 @@
             this.btnAssignStep1 = new System.Windows.Forms.Button();
             this.btnAssignStep2Redistribute = new System.Windows.Forms.Button();
             this.btnConfirmAssignments = new System.Windows.Forms.Button();
+
             ((System.ComponentModel.ISupportInitialize)(this.studentsDataGridView)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -94,10 +103,17 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownAlbumNumber)).BeginInit();
             this.tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+
             this.tabPage2.SuspendLayout();
+            this.tcGradesPage.SuspendLayout();
+            this.tpManageStudentGrades.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvStudentGrades)).BeginInit();
             this.pnlGradeActions.SuspendLayout();
             this.pnlStudentSelection.SuspendLayout();
+            this.tpAverageGradesSummary.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvAverageGrades)).BeginInit();
+            this.pnlAverageCalculation.SuspendLayout();
+
             this.tabPage3.SuspendLayout();
             this.tcAssignmentResults.SuspendLayout();
             this.tpUnassignedStudents.SuspendLayout();
@@ -381,9 +397,7 @@
             // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.dgvStudentGrades);
-            this.tabPage2.Controls.Add(this.pnlGradeActions);
-            this.tabPage2.Controls.Add(this.pnlStudentSelection);
+            this.tabPage2.Controls.Add(this.tcGradesPage);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(8);
@@ -392,27 +406,51 @@
             this.tabPage2.Text = "Oceny Studentów";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // tcGradesPage
+            // 
+            this.tcGradesPage.Controls.Add(this.tpManageStudentGrades);
+            this.tcGradesPage.Controls.Add(this.tpAverageGradesSummary);
+            this.tcGradesPage.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tcGradesPage.Location = new System.Drawing.Point(8, 8);
+            this.tcGradesPage.Name = "tcGradesPage";
+            this.tcGradesPage.SelectedIndex = 0;
+            this.tcGradesPage.Size = new System.Drawing.Size(1041, 542);
+            this.tcGradesPage.TabIndex = 0;
+            // 
+            // tpManageStudentGrades
+            // 
+            this.tpManageStudentGrades.Controls.Add(this.dgvStudentGrades);
+            this.tpManageStudentGrades.Controls.Add(this.pnlGradeActions);
+            this.tpManageStudentGrades.Controls.Add(this.pnlStudentSelection);
+            this.tpManageStudentGrades.Location = new System.Drawing.Point(4, 22);
+            this.tpManageStudentGrades.Name = "tpManageStudentGrades";
+            this.tpManageStudentGrades.Padding = new System.Windows.Forms.Padding(3);
+            this.tpManageStudentGrades.Size = new System.Drawing.Size(1033, 516);
+            this.tpManageStudentGrades.TabIndex = 0;
+            this.tpManageStudentGrades.Text = "Zarządzanie Ocenami";
+            this.tpManageStudentGrades.UseVisualStyleBackColor = true;
+            // 
             // dgvStudentGrades
             // 
             this.dgvStudentGrades.AllowUserToAddRows = false;
             this.dgvStudentGrades.AllowUserToDeleteRows = false;
             this.dgvStudentGrades.AllowUserToOrderColumns = true;
             this.dgvStudentGrades.AllowUserToResizeRows = false;
-            dataGridViewCellStyle13.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
-            this.dgvStudentGrades.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle13;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            this.dgvStudentGrades.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             this.dgvStudentGrades.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgvStudentGrades.BackgroundColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle14.BackColor = System.Drawing.SystemColors.ControlLight;
-            dataGridViewCellStyle14.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            dataGridViewCellStyle14.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle14.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle14.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle14.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvStudentGrades.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle14;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.ControlLight;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvStudentGrades.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.dgvStudentGrades.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvStudentGrades.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvStudentGrades.Location = new System.Drawing.Point(8, 77);
+            this.dgvStudentGrades.Location = new System.Drawing.Point(3, 72);
             this.dgvStudentGrades.Margin = new System.Windows.Forms.Padding(2);
             this.dgvStudentGrades.MultiSelect = false;
             this.dgvStudentGrades.Name = "dgvStudentGrades";
@@ -420,7 +458,7 @@
             this.dgvStudentGrades.RowHeadersWidth = 51;
             this.dgvStudentGrades.RowTemplate.Height = 24;
             this.dgvStudentGrades.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvStudentGrades.Size = new System.Drawing.Size(1041, 473);
+            this.dgvStudentGrades.Size = new System.Drawing.Size(1027, 441);
             this.dgvStudentGrades.TabIndex = 2;
             // 
             // pnlGradeActions
@@ -429,11 +467,11 @@
             this.pnlGradeActions.Controls.Add(this.btnDeleteGrade);
             this.pnlGradeActions.Controls.Add(this.btnSaveGrades);
             this.pnlGradeActions.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlGradeActions.Location = new System.Drawing.Point(8, 40);
+            this.pnlGradeActions.Location = new System.Drawing.Point(3, 35);
             this.pnlGradeActions.Margin = new System.Windows.Forms.Padding(2);
             this.pnlGradeActions.Name = "pnlGradeActions";
             this.pnlGradeActions.Padding = new System.Windows.Forms.Padding(0, 4, 0, 4);
-            this.pnlGradeActions.Size = new System.Drawing.Size(1041, 37);
+            this.pnlGradeActions.Size = new System.Drawing.Size(1027, 37);
             this.pnlGradeActions.TabIndex = 1;
             // 
             // btnAddGrade
@@ -471,10 +509,10 @@
             this.pnlStudentSelection.Controls.Add(this.lblStudentSelectionGrades);
             this.pnlStudentSelection.Controls.Add(this.cmbStudentSelectorGrades);
             this.pnlStudentSelection.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlStudentSelection.Location = new System.Drawing.Point(8, 8);
+            this.pnlStudentSelection.Location = new System.Drawing.Point(3, 3);
             this.pnlStudentSelection.Margin = new System.Windows.Forms.Padding(2);
             this.pnlStudentSelection.Name = "pnlStudentSelection";
-            this.pnlStudentSelection.Size = new System.Drawing.Size(1041, 32);
+            this.pnlStudentSelection.Size = new System.Drawing.Size(1027, 32);
             this.pnlStudentSelection.TabIndex = 0;
             // 
             // lblStudentSelectionGrades
@@ -489,7 +527,7 @@
             // 
             // cmbStudentSelectorGrades
             // 
-            this.cmbStudentSelectorGrades.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.cmbStudentSelectorGrades.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbStudentSelectorGrades.DisplayMember = "StudentID";
             this.cmbStudentSelectorGrades.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -497,9 +535,74 @@
             this.cmbStudentSelectorGrades.Location = new System.Drawing.Point(98, 6);
             this.cmbStudentSelectorGrades.Margin = new System.Windows.Forms.Padding(2);
             this.cmbStudentSelectorGrades.Name = "cmbStudentSelectorGrades";
-            this.cmbStudentSelectorGrades.Size = new System.Drawing.Size(942, 21);
+            this.cmbStudentSelectorGrades.Size = new System.Drawing.Size(925, 21);
             this.cmbStudentSelectorGrades.TabIndex = 1;
             this.cmbStudentSelectorGrades.ValueMember = "StudentID";
+            // 
+            // tpAverageGradesSummary
+            // 
+            this.tpAverageGradesSummary.Controls.Add(this.dgvAverageGrades);
+            this.tpAverageGradesSummary.Controls.Add(this.pnlAverageCalculation);
+            this.tpAverageGradesSummary.Location = new System.Drawing.Point(4, 22);
+            this.tpAverageGradesSummary.Name = "tpAverageGradesSummary";
+            this.tpAverageGradesSummary.Padding = new System.Windows.Forms.Padding(3);
+            this.tpAverageGradesSummary.Size = new System.Drawing.Size(1033, 516);
+            this.tpAverageGradesSummary.TabIndex = 1;
+            this.tpAverageGradesSummary.Text = "Średnie Ocen";
+            this.tpAverageGradesSummary.UseVisualStyleBackColor = true;
+            // 
+            // dgvAverageGrades
+            // 
+            this.dgvAverageGrades.AllowUserToAddRows = false;
+            this.dgvAverageGrades.AllowUserToDeleteRows = false;
+            this.dgvAverageGrades.AllowUserToOrderColumns = true;
+            this.dgvAverageGrades.AllowUserToResizeRows = false;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
+            this.dgvAverageGrades.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle3;
+            this.dgvAverageGrades.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvAverageGrades.BackgroundColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.ControlLight;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvAverageGrades.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            this.dgvAverageGrades.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvAverageGrades.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvAverageGrades.Location = new System.Drawing.Point(3, 40);
+            this.dgvAverageGrades.Margin = new System.Windows.Forms.Padding(2);
+            this.dgvAverageGrades.MultiSelect = false;
+            this.dgvAverageGrades.Name = "dgvAverageGrades";
+            this.dgvAverageGrades.ReadOnly = true;
+            this.dgvAverageGrades.RowHeadersVisible = false;
+            this.dgvAverageGrades.RowHeadersWidth = 51;
+            this.dgvAverageGrades.RowTemplate.Height = 24;
+            this.dgvAverageGrades.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvAverageGrades.Size = new System.Drawing.Size(1027, 473);
+            this.dgvAverageGrades.TabIndex = 1;
+            // 
+            // pnlAverageCalculation
+            // 
+            this.pnlAverageCalculation.Controls.Add(this.btnCalculateAverageGrades);
+            this.pnlAverageCalculation.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlAverageCalculation.Location = new System.Drawing.Point(3, 3);
+            this.pnlAverageCalculation.Name = "pnlAverageCalculation";
+            this.pnlAverageCalculation.Padding = new System.Windows.Forms.Padding(0, 4, 0, 4);
+            this.pnlAverageCalculation.Size = new System.Drawing.Size(1027, 37);
+            this.pnlAverageCalculation.TabIndex = 0;
+            // 
+            // btnCalculateAverageGrades
+            // 
+            this.btnCalculateAverageGrades.Location = new System.Drawing.Point(2, 6);
+            this.btnCalculateAverageGrades.Margin = new System.Windows.Forms.Padding(2);
+            this.btnCalculateAverageGrades.Name = "btnCalculateAverageGrades";
+            this.btnCalculateAverageGrades.Size = new System.Drawing.Size(200, 24);
+            this.btnCalculateAverageGrades.TabIndex = 0;
+            this.btnCalculateAverageGrades.Text = "Oblicz i Wyświetl Średnie";
+            this.btnCalculateAverageGrades.UseVisualStyleBackColor = true;
+            // this.btnCalculateAverageGrades.Click += new System.EventHandler(this.btnCalculateAverageGrades_Click); // Handler do dodania później
             // 
             // tabPage3
             // 
@@ -630,7 +733,7 @@
             // 
             this.lblStudentsStillUnassignedCount.AutoSize = true;
             this.lblStudentsStillUnassignedCount.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lblStudentsStillUnassignedCount.Location = new System.Drawing.Point(320, 69);
+            this.lblStudentsStillUnassignedCount.Location = new System.Drawing.Point(270, 69); // Zaktualizowane z 320 na 270 jak w drugim pliku
             this.lblStudentsStillUnassignedCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblStudentsStillUnassignedCount.Name = "lblStudentsStillUnassignedCount";
             this.lblStudentsStillUnassignedCount.Size = new System.Drawing.Size(14, 13);
@@ -640,7 +743,7 @@
             // lblInfoStillUnassigned
             // 
             this.lblInfoStillUnassigned.AutoSize = true;
-            this.lblInfoStillUnassigned.Location = new System.Drawing.Point(215, 69);
+            this.lblInfoStillUnassigned.Location = new System.Drawing.Point(172, 69); // Zaktualizowane z 215 na 172
             this.lblInfoStillUnassigned.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblInfoStillUnassigned.Name = "lblInfoStillUnassigned";
             this.lblInfoStillUnassigned.Size = new System.Drawing.Size(101, 13);
@@ -672,7 +775,7 @@
             // 
             this.lblStudentsAssignedStep1Count.AutoSize = true;
             this.lblStudentsAssignedStep1Count.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lblStudentsAssignedStep1Count.Location = new System.Drawing.Point(320, 49);
+            this.lblStudentsAssignedStep1Count.Location = new System.Drawing.Point(266, 49); // Zaktualizowane z 320 na 266
             this.lblStudentsAssignedStep1Count.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblStudentsAssignedStep1Count.Name = "lblStudentsAssignedStep1Count";
             this.lblStudentsAssignedStep1Count.Size = new System.Drawing.Size(14, 13);
@@ -682,7 +785,7 @@
             // lblInfoAssignedStep1
             // 
             this.lblInfoAssignedStep1.AutoSize = true;
-            this.lblInfoAssignedStep1.Location = new System.Drawing.Point(219, 49);
+            this.lblInfoAssignedStep1.Location = new System.Drawing.Point(172, 49); // Zaktualizowane z 219 na 172
             this.lblInfoAssignedStep1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblInfoAssignedStep1.Name = "lblInfoAssignedStep1";
             this.lblInfoAssignedStep1.Size = new System.Drawing.Size(97, 13);
@@ -693,7 +796,7 @@
             // 
             this.lblStudentsToProcessCount.AutoSize = true;
             this.lblStudentsToProcessCount.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.lblStudentsToProcessCount.Location = new System.Drawing.Point(158, 49);
+            this.lblStudentsToProcessCount.Location = new System.Drawing.Point(131, 49); // Zaktualizowane z 158 na 131
             this.lblStudentsToProcessCount.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblStudentsToProcessCount.Name = "lblStudentsToProcessCount";
             this.lblStudentsToProcessCount.Size = new System.Drawing.Size(14, 13);
@@ -772,11 +875,18 @@
             this.tabPage4.ResumeLayout(false);
             this.tabPage4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            this.tabPage2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvStudentGrades)).EndInit();
-            this.pnlGradeActions.ResumeLayout(false);
+
             this.pnlStudentSelection.ResumeLayout(false);
             this.pnlStudentSelection.PerformLayout();
+            this.pnlGradeActions.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvStudentGrades)).EndInit();
+            this.tpManageStudentGrades.ResumeLayout(false);
+            this.pnlAverageCalculation.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvAverageGrades)).EndInit();
+            this.tpAverageGradesSummary.ResumeLayout(false);
+            this.tcGradesPage.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
+
             this.tabPage3.ResumeLayout(false);
             this.tcAssignmentResults.ResumeLayout(false);
             this.tpUnassignedStudents.ResumeLayout(false);
@@ -792,10 +902,11 @@
         }
 
         #endregion
+        // Kontrolki z tabPage1
         private System.Windows.Forms.DataGridView studentsDataGridView;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabPage tabPage2; // Kontener dla tcGradesPage
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
@@ -811,8 +922,25 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ComboBox comboBoxStatus;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Button button1;
 
-        // --- DEKLARACJE NOWYCH KONTROLEK DLA tabPage2 ---
+        // Kontrolki z tabPage4
+        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.ComboBox comboBoxSpecialization1;
+        private System.Windows.Forms.ComboBox comboBoxSpecialization2;
+        private System.Windows.Forms.ComboBox comboBoxSpecialization3;
+
+        // --- KONTROLKI DLA ZMODYFIKOWANEJ tabPage2 ---
+        private System.Windows.Forms.TabControl tcGradesPage;
+        private System.Windows.Forms.TabPage tpManageStudentGrades;
+        private System.Windows.Forms.TabPage tpAverageGradesSummary;
+
+        // Kontrolki w tpManageStudentGrades
         private System.Windows.Forms.Panel pnlStudentSelection;
         private System.Windows.Forms.Label lblStudentSelectionGrades;
         private System.Windows.Forms.ComboBox cmbStudentSelectorGrades;
@@ -821,7 +949,12 @@
         private System.Windows.Forms.Button btnDeleteGrade;
         private System.Windows.Forms.Button btnSaveGrades;
         private System.Windows.Forms.DataGridView dgvStudentGrades;
-        // --- KONIEC DEKLARACJI NOWYCH KONTROLEK DLA tabPage2 ---
+
+        // Kontrolki w tpAverageGradesSummary
+        private System.Windows.Forms.Panel pnlAverageCalculation;
+        private System.Windows.Forms.Button btnCalculateAverageGrades;
+        private System.Windows.Forms.DataGridView dgvAverageGrades;
+        // --- KONIEC KONTROLEK DLA ZMODYFIKOWANEJ tabPage2 ---
 
         // --- DEKLARACJE KONTROLEK DLA tabPage3 (istniejące) ---
         private System.Windows.Forms.Panel pnlAssignmentControls;
@@ -844,16 +977,6 @@
         private System.Windows.Forms.TextBox txtAssignmentLog;
         private System.Windows.Forms.TabPage tpGroupsPreview;
         private System.Windows.Forms.DataGridView dgvGroupsPreview;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.TabPage tabPage4;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.ComboBox comboBoxSpecialization1;
-        private System.Windows.Forms.ComboBox comboBoxSpecialization2;
-        private System.Windows.Forms.ComboBox comboBoxSpecialization3;
         // --- KONIEC DEKLARACJI KONTROLEK DLA tabPage3 ---
     }
 }
