@@ -1115,6 +1115,7 @@ namespace UniManagement
         }
     }
 
+    // Formatka z przedmiotami i ocenami w Page 2
     public class AddGradeForm : Form
     {
         public int SelectedSubjectId { get; private set; }
@@ -1192,5 +1193,7 @@ namespace UniManagement
                 cmbSubjects.Enabled = false;
             }
         }
+
+        // Page 2 - KONIEC
     }
 }
