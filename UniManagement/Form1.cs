@@ -13,10 +13,9 @@ namespace UniManagement
     {
         private string connectionString = "Data Source=FirstOne;Initial Catalog=UniManagement;Integrated Security=True;Encrypt=False";
         private SqlDataAdapter dataAdapter;
-        private DataSet dataSet;
-        private BindingSource bindingSource;
+        private DataSet dataSet;           
+        private BindingSource bindingSource;  
 
-        // Pola dla nowej funkcjonalności przypisywania
         private DataSet assignmentDataSet;
         private SqlDataAdapter studentsToAssignAdapter;
         private SqlDataAdapter specializationsAdapter;
@@ -36,9 +35,9 @@ namespace UniManagement
         {
             InitializeComponent();
             InitializeDataComponents();
+            InitializeAssignmentTabComponents();
             LoadData();
             SetupDataBindings();
-            InitializeAssignmentTabComponents(); // <-- NOWE WYWOŁANIE
         }
 
         private void InitializeDataComponents()
@@ -62,18 +61,33 @@ namespace UniManagement
         {
             try
             {
+                // Jeśli dataSet był już używany, a tabela "Students" istnieje, wyczyść ją przed ponownym załadowaniem.
+                // Zachowaj jednak definicję tabeli, w tym klucz główny, jeśli został już ustawiony.
                 if (dataSet.Tables.Contains("Students"))
                 {
                     dataSet.Tables["Students"].Clear();
                 }
+
                 SqlConnection connection = new SqlConnection(connectionString);
                 string query = "SELECT StudentID, NumerAlbumu, Imie, Nazwisko, Email, SpecjalizacjaID, SredniaOcenKwalifikacyjna, StatusKwalifikacji FROM Studenci";
                 dataAdapter = new SqlDataAdapter(query, connection);
+
                 SqlCommandBuilder commandBuilder = new SqlCommandBuilder(dataAdapter);
                 dataAdapter.InsertCommand = commandBuilder.GetInsertCommand();
                 dataAdapter.UpdateCommand = commandBuilder.GetUpdateCommand();
                 dataAdapter.DeleteCommand = commandBuilder.GetDeleteCommand();
+
                 dataAdapter.Fill(dataSet, "Students");
+
+                // Ustawienie klucza głównego dla tabeli "Students" w głównym dataSet
+                // Należy to zrobić PO wypełnieniu tabeli, ale PRZED próbą użycia Rows.Find() lub Update()
+                if (dataSet.Tables["Students"].PrimaryKey.Length == 0 && dataSet.Tables["Students"].Columns.Contains("StudentID"))
+                {
+                    dataSet.Tables["Students"].PrimaryKey = new DataColumn[] { dataSet.Tables["Students"].Columns["StudentID"] };
+                    // Opcjonalnie: AppendToLog lub MessageBox informujący o ustawieniu klucza, jeśli potrzebne do debugowania.
+                    // Pamiętaj, że AppendToLog jest zdefiniowany w kontekście zakładki przypisywania.
+                }
+
                 bindingSource.DataSource = dataSet.Tables["Students"];
             }
             catch (Exception ex)
@@ -339,74 +353,98 @@ namespace UniManagement
 
         }
 
+        // btnLoadDataForAssignment_Click - dodanie ustawienia klucza dla Specializations w assignmentDataSet
         private void btnLoadDataForAssignment_Click(object sender, EventArgs e)
         {
             try
             {
                 AppendToLog("Rozpoczęto ładowanie danych do przypisania...");
-                assignmentDataSet.Clear(); // Czyści wszystkie tabele i ich definicje
+                if (assignmentDataSet == null) assignmentDataSet = new DataSet("AssignmentData");
+                assignmentDataSet.Clear();
 
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                // 1. Wczytaj studentów do przypisania
+                // Ten adapter jest używany tylko do wypełnienia, więc może być lokalny.
+                using (SqlConnection connStdToAssign = new SqlConnection(connectionString))
                 {
-                    conn.Open();
-
-                    // 1. Wczytaj studentów do przypisania
                     string studentsQuery = @"
                         SELECT StudentID, NumerAlbumu, Imie, Nazwisko, SredniaOcenKwalifikacyjna, StatusKwalifikacji 
                         FROM Studenci 
                         WHERE (SpecjalizacjaID IS NULL OR StatusKwalifikacji = 'Oczekujący' OR StatusKwalifikacji = 'W trakcie rozpatrywania')
-                              AND SredniaOcenKwalifikacyjna IS NOT NULL
-                        ORDER BY SredniaOcenKwalifikacyjna DESC, Nazwisko, Imie;";
-                    studentsToAssignAdapter = new SqlDataAdapter(studentsQuery, conn);
+                              AND SredniaOcenKwalifikacyjna IS NOT NULL 
+                        ORDER BY SredniaOcenKwalifikacyjna DESC, Nazwisko ASC, Imie ASC;";
+                    studentsToAssignAdapter = new SqlDataAdapter(studentsQuery, connStdToAssign);
                     studentsToAssignAdapter.Fill(assignmentDataSet, studentsToAssignTableName);
-                    AppendToLog($"Załadowano {assignmentDataSet.Tables[studentsToAssignTableName].Rows.Count} studentów do przetworzenia.");
-
-                    // Dodaj tymczasowe kolumny do śledzenia przypisań
-                    DataTable dtStudentsToAssign = assignmentDataSet.Tables[studentsToAssignTableName];
-                    if (!dtStudentsToAssign.Columns.Contains(tempAssignedSpecIdColName))
-                    {
-                        dtStudentsToAssign.Columns.Add(tempAssignedSpecIdColName, typeof(int));
-                        dtStudentsToAssign.Columns[tempAssignedSpecIdColName].AllowDBNull = true;
-                    }
-                    if (!dtStudentsToAssign.Columns.Contains(tempAssignmentStatusColName))
-                    {
-                        dtStudentsToAssign.Columns.Add(tempAssignmentStatusColName, typeof(string));
-                    }
-                    foreach (DataRow row in dtStudentsToAssign.Rows)
-                    {
-                        row[tempAssignmentStatusColName] = "Oczekujący na przypisanie";
-                    }
-
-
-                    // 2. Wczytaj specjalizacje
-                    string specsQuery = "SELECT SpecjalizacjaID, NazwaSpecjalizacji, LimitMiejsc, MinimalnaSredniaOgólna, AktualnieZajeteMiejsca FROM Specjalizacje ORDER BY NazwaSpecjalizacji;";
-                    specializationsAdapter = new SqlDataAdapter(specsQuery, conn);
-                    SqlCommandBuilder specBuilder = new SqlCommandBuilder(specializationsAdapter); // Do generowania UpdateCommand
-                    specializationsAdapter.UpdateCommand = specBuilder.GetUpdateCommand();
-                    specializationsAdapter.Fill(assignmentDataSet, specializationsTableName);
-                    AppendToLog($"Załadowano {assignmentDataSet.Tables[specializationsTableName].Rows.Count} specjalizacji.");
-
-                    DataTable dtSpecializations = assignmentDataSet.Tables[specializationsTableName];
-                    if (!dtSpecializations.Columns.Contains("WolneMiejsca"))
-                    {
-                        DataColumn wolneMiejscaCol = new DataColumn("WolneMiejsca", typeof(int));
-                        wolneMiejscaCol.Expression = "LimitMiejsc - AktualnieZajeteMiejsca";
-                        dtSpecializations.Columns.Add(wolneMiejscaCol);
-                    }
-
-
-                    // 3. Wczytaj preferencje studentów
-                    string prefsQuery = "SELECT PreferencjaID, StudentID, SpecjalizacjaID, Priorytet FROM PreferencjeStudentow ORDER BY StudentID, Priorytet;";
-                    studentPreferencesAdapter = new SqlDataAdapter(prefsQuery, conn);
-                    studentPreferencesAdapter.Fill(assignmentDataSet, studentPreferencesTableName);
-                    AppendToLog($"Załadowano {assignmentDataSet.Tables[studentPreferencesTableName].Rows.Count} preferencji studentów.");
                 }
+                AppendToLog($"Załadowano {assignmentDataSet.Tables[studentsToAssignTableName].Rows.Count} studentów do przetworzenia.");
+
+                DataTable dtStudentsToAssign = assignmentDataSet.Tables[studentsToAssignTableName];
+                if (dtStudentsToAssign.PrimaryKey.Length == 0 && dtStudentsToAssign.Columns.Contains("StudentID"))
+                {
+                    dtStudentsToAssign.PrimaryKey = new DataColumn[] { dtStudentsToAssign.Columns["StudentID"] };
+                }
+                if (!dtStudentsToAssign.Columns.Contains(tempAssignedSpecIdColName))
+                {
+                    dtStudentsToAssign.Columns.Add(tempAssignedSpecIdColName, typeof(int))
+                        .AllowDBNull = true;
+                }
+                if (!dtStudentsToAssign.Columns.Contains(tempAssignmentStatusColName))
+                {
+                    dtStudentsToAssign.Columns.Add(tempAssignmentStatusColName, typeof(string));
+                }
+                foreach (DataRow row in dtStudentsToAssign.Rows)
+                {
+                    row[tempAssignmentStatusColName] = "Oczekujący na przypisanie";
+                }
+
+                // 2. Wczytaj specjalizacje
+                // specializationsAdapter jest polem klasy, więc konfigurujemy go tak, aby był trwały.
+                string specsQuery = "SELECT SpecjalizacjaID, NazwaSpecjalizacji, LimitMiejsc, MinimalnaSredniaOgólna, AktualnieZajeteMiejsca FROM Specjalizacje ORDER BY NazwaSpecjalizacji;";
+
+                // Tworzymy nowy adapter lub rekonfigurujemy istniejący
+                specializationsAdapter = new SqlDataAdapter();
+                // SelectCommand dostaje NOWY, DEDYKOWANY obiekt SqlConnection.
+                // Ten obiekt połączenia będzie żył tak długo, jak adapter (lub jego SelectCommand)
+                // i adapter będzie nim zarządzał (otwierał/zamykał).
+                specializationsAdapter.SelectCommand = new SqlCommand(specsQuery, new SqlConnection(connectionString));
+
+                // SqlCommandBuilder użyje połączenia z SelectCommand do zbudowania UpdateCommand (i innych).
+                // Te wygenerowane komendy będą współdzielić ten sam, "długożyjący" obiekt połączenia.
+                SqlCommandBuilder specBuilder = new SqlCommandBuilder(specializationsAdapter);
+                specializationsAdapter.UpdateCommand = specBuilder.GetUpdateCommand();
+                // Jeśli potrzebujesz Insert/Delete dla specjalizacji przez ten adapter, też je pobierz:
+                // specializationsAdapter.InsertCommand = specBuilder.GetInsertCommand();
+                // specializationsAdapter.DeleteCommand = specBuilder.GetDeleteCommand();
+
+                specializationsAdapter.Fill(assignmentDataSet, specializationsTableName);
+                AppendToLog($"Załadowano {assignmentDataSet.Tables[specializationsTableName].Rows.Count} specjalizacji.");
+
+                DataTable dtSpecializations = assignmentDataSet.Tables[specializationsTableName];
+                if (dtSpecializations.PrimaryKey.Length == 0 && dtSpecializations.Columns.Contains("SpecjalizacjaID"))
+                {
+                    dtSpecializations.PrimaryKey = new DataColumn[] { dtSpecializations.Columns["SpecjalizacjaID"] };
+                }
+                if (!dtSpecializations.Columns.Contains("WolneMiejsca"))
+                {
+                    DataColumn wolneMiejscaCol = new DataColumn("WolneMiejsca", typeof(int))
+                    {
+                        Expression = "LimitMiejsc - AktualnieZajeteMiejsca"
+                    };
+                    dtSpecializations.Columns.Add(wolneMiejscaCol);
+                }
+
+                // 3. Wczytaj preferencje studentów
+                // Ten adapter również może być lokalny.
+                using (SqlConnection connPrefs = new SqlConnection(connectionString))
+                {
+                    string prefsQuery = "SELECT PreferencjaID, StudentID, SpecjalizacjaID, Priorytet FROM PreferencjeStudentow ORDER BY StudentID, Priorytet;";
+                    studentPreferencesAdapter = new SqlDataAdapter(prefsQuery, connPrefs);
+                    studentPreferencesAdapter.Fill(assignmentDataSet, studentPreferencesTableName);
+                }
+                AppendToLog($"Załadowano {assignmentDataSet.Tables[studentPreferencesTableName].Rows.Count} preferencji studentów.");
 
                 bsUnassignedStudents.DataSource = assignmentDataSet;
                 bsUnassignedStudents.DataMember = studentsToAssignTableName;
-                // Filtr początkowy, aby pokazać wszystkich ładowanych, status będzie się zmieniał
-                bsUnassignedStudents.Filter = $"{tempAssignmentStatusColName} = 'Oczekujący na przypisanie'";
-
+                bsUnassignedStudents.Filter = $"{tempAssignedSpecIdColName} IS NULL OR {tempAssignmentStatusColName} = 'Oczekujący na przypisanie'";
 
                 bsGroupsPreview.DataSource = assignmentDataSet;
                 bsGroupsPreview.DataMember = specializationsTableName;
@@ -416,7 +454,7 @@ namespace UniManagement
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Błąd podczas ładowania danych do przypisania: {ex.Message}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Błąd podczas ładowania danych do przypisania: {ex.Message}\n{ex.StackTrace}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 AppendToLog($"BŁĄD ładowania danych: {ex.Message}");
             }
         }
@@ -532,35 +570,34 @@ namespace UniManagement
             }
 
             int studentsUpdatedCount = 0;
-            int specializationsUpdatedCount = 0;
+            int specializationsUpdatedCount = 0; // Zadeklarowana, używana w MessageBoxie
 
             try
             {
                 AppendToLog("Rozpoczęto zatwierdzanie przypisań...");
                 DataTable dtStudentsToAssign = assignmentDataSet.Tables[studentsToAssignTableName];
-                DataTable dtMainStudents = dataSet.Tables["Students"]; // Główny DataSet
+                DataTable dtMainStudents = dataSet.Tables["Students"];
 
                 foreach (DataRow assignedStudentRow in dtStudentsToAssign.Rows)
                 {
-                    if (assignedStudentRow[tempAssignedSpecIdColName] != DBNull.Value)
+                    if (assignedStudentRow.RowState != DataRowState.Deleted && assignedStudentRow[tempAssignedSpecIdColName] != DBNull.Value)
                     {
                         int studentId = Convert.ToInt32(assignedStudentRow["StudentID"]);
                         int specializationId = Convert.ToInt32(assignedStudentRow[tempAssignedSpecIdColName]);
-                        string finalStatus = "Zakwalifikowany"; // Domyślny status po przypisaniu
-
-                        // Ustalanie statusu na podstawie tego, w którym kroku przypisano
+                        string finalStatus = "Zakwalifikowany";
                         string tempStatus = assignedStudentRow[tempAssignmentStatusColName]?.ToString() ?? "";
                         if (tempStatus.Contains("Krok 1")) finalStatus = "Zakwalifikowany (Krok 1)";
                         else if (tempStatus.Contains("Krok 2")) finalStatus = "Zakwalifikowany (Krok 2)";
 
-
-                        DataRow mainStudentRow = dtMainStudents.Rows.Find(studentId); // Zakładając, że StudentID jest kluczem głównym
+                        DataRow mainStudentRow = dtMainStudents.Rows.Find(studentId);
                         if (mainStudentRow != null)
                         {
                             mainStudentRow["SpecjalizacjaID"] = specializationId;
                             mainStudentRow["StatusKwalifikacji"] = finalStatus;
-                            studentsUpdatedCount++;
-                            AppendToLog($"Aktualizacja studenta ID: {studentId} - Spec: {specializationId}, Status: {finalStatus}");
+                            // Zmiana jest w dtMainStudents, które jest częścią dataSet
+                            // dataAdapter (główny) zaktualizuje to.
+                            studentsUpdatedCount++; // Liczymy ilu studentów faktycznie próbujemy zaktualizować w głównym dataSet.
+                            AppendToLog($"Przygotowano aktualizację dla studenta ID: {studentId} - Spec: {specializationId}, Status: {finalStatus}");
                         }
                         else
                         {
@@ -570,44 +607,62 @@ namespace UniManagement
                 }
 
                 // Zapisz zmiany w tabeli Studenci (używając głównego dataAdapter)
-                if (studentsUpdatedCount > 0)
+                if (dataSet.HasChanges(DataRowState.Modified | DataRowState.Added | DataRowState.Deleted)) // Sprawdzamy, czy są jakiekolwiek zmiany w głównym dataSet
                 {
-                    dataAdapter.Update(dataSet, "Students"); // Użyj istniejącego adaptera
-                    AppendToLog($"Zaktualizowano {studentsUpdatedCount} studentów w bazie danych.");
+                    if (dataAdapter.UpdateCommand == null || dataAdapter.UpdateCommand.Connection == null || string.IsNullOrEmpty(dataAdapter.UpdateCommand.Connection.ConnectionString))
+                    {
+                        AppendToLog("BŁĄD KRYTYCZNY: Główny dataAdapter nie ma prawidłowego UpdateCommand lub połączenia.");
+                        MessageBox.Show("Błąd konfiguracji głównego adaptera danych. Nie można zapisać zmian studentów.", "Błąd krytyczny", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        if (assignmentDataSet.HasChanges()) assignmentDataSet.RejectChanges(); // Odrzuć tymczasowe zmiany, bo zapis się nie udał
+                        return;
+                    }
+                    int actualStudentsUpdatedInDb = dataAdapter.Update(dataSet, "Students");
+                    AppendToLog($"Zaktualizowano {actualStudentsUpdatedInDb} wierszy studentów w bazie danych.");
+                    dataSet.AcceptChanges(); // Zaakceptuj zmiany w głównym dataSet PO udanym zapisie do bazy
                 }
                 else
                 {
-                    AppendToLog("Brak studentów do zaktualizowania w bazie danych.");
+                    AppendToLog("Brak zmian w danych studentów do zapisania w bazie.");
                 }
 
                 // Zapisz zmiany w tabeli Specjalizacje (używając specializationsAdapter)
-                // Upewnij się, że specializationsAdapter ma skonfigurowany UpdateCommand
-                // Zrobiono to w btnLoadDataForAssignment_Click poprzez SqlCommandBuilder
-                if (assignmentDataSet.Tables[specializationsTableName].GetChanges(DataRowState.Modified) != null)
+                DataTable specializationsChanges = assignmentDataSet.Tables[specializationsTableName].GetChanges(DataRowState.Modified);
+                if (specializationsChanges != null && specializationsChanges.Rows.Count > 0)
                 {
-                    specializationsAdapter.Update(assignmentDataSet, specializationsTableName);
-                    specializationsUpdatedCount = assignmentDataSet.Tables[specializationsTableName].GetChanges(DataRowState.Modified)?.Rows.Count ?? 0; // Liczba może być niedokładna po Update
-                    AppendToLog($"Zaktualizowano informacje o zajętych miejscach dla specjalizacji w bazie danych.");
-                    // Trzeba by policzyć faktycznie zmodyfikowane wiersze przed Update lub po przez ponowne pobranie
+                    if (specializationsAdapter != null && specializationsAdapter.UpdateCommand != null && specializationsAdapter.UpdateCommand.Connection != null && !string.IsNullOrEmpty(specializationsAdapter.UpdateCommand.Connection.ConnectionString))
+                    {
+                        // UpdateCommand dla specializationsAdapter zostało skonfigurowane w btnLoadDataForAssignment_Click
+                        // z własnym, "długożyjącym" obiektem SqlConnection. Adapter sam nim zarządzi.
+                        int updatedSpecRows = specializationsAdapter.Update(specializationsChanges); // Przekazujemy tylko zmienione wiersze
+                        AppendToLog($"Zaktualizowano {updatedSpecRows} specjalizacji (zajęte miejsca) w bazie danych.");
+                        assignmentDataSet.Tables[specializationsTableName].AcceptChanges(); // Zaakceptuj zmiany w assignmentDataSet dla specjalizacji
+                        specializationsUpdatedCount = updatedSpecRows;
+                    }
+                    else
+                    {
+                        AppendToLog("BŁĄD KRYTYCZNY: Adapter specjalizacji lub jego UpdateCommand/Connection nie jest poprawnie skonfigurowany.");
+                        MessageBox.Show("Błąd konfiguracji adaptera specjalizacji. Nie można zapisać zmian.", "Błąd krytyczny", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        if (dataSet.HasChanges()) dataSet.RejectChanges(); // Odrzuć zmiany studentów, jeśli specjalizacje się nie zapisały
+                        return;
+                    }
                 }
                 else
                 {
                     AppendToLog("Brak zmian w danych specjalizacji do zapisania.");
                 }
 
-
-                MessageBox.Show($"Zakończono proces przypisywania.\nZaktualizowano studentów: {studentsUpdatedCount}\nZaktualizowano specjalizacje (zajęte miejsca).", "Sukces", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"Zakończono proces przypisywania.\nZaktualizowano studentów w bazie: (liczba zaktualizowanych wierszy zostanie podana przez dataAdapter.Update)\nZaktualizowano specjalizacje w bazie: {specializationsUpdatedCount}.", "Sukces", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 AppendToLog("Zatwierdzanie zakończone pomyślnie.");
 
-                // Odśwież dane na obu zakładkach
-                LoadData(); // Odświeża dane na pierwszej zakładce
-                btnLoadDataForAssignment_Click(null, EventArgs.Empty); // Resetuje i odświeża dane na zakładce przypisywania
-
+                LoadData();
+                btnLoadDataForAssignment_Click(null, EventArgs.Empty);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Błąd podczas zatwierdzania przypisań: {ex.Message}", "Błąd krytyczny", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Błąd podczas zatwierdzania przypisań: {ex.Message}\n{ex.StackTrace}", "Błąd krytyczny", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 AppendToLog($"KRYTYCZNY BŁĄD podczas zatwierdzania: {ex.Message}");
+                if (dataSet.HasChanges()) dataSet.RejectChanges();
+                if (assignmentDataSet.HasChanges()) assignmentDataSet.RejectChanges();
             }
         }
 
