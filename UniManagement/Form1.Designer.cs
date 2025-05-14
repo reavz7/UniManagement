@@ -51,8 +51,8 @@
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.button5 = new System.Windows.Forms.Button();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.dataGridViewSpecializations = new System.Windows.Forms.DataGridView();
+            this.buttonAsignSpecializations = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -101,7 +101,7 @@
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownAlbumNumber)).BeginInit();
             this.tabPage4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewSpecializations)).BeginInit();
             this.tabPage2.SuspendLayout();
             this.tcGradesPage.SuspendLayout();
             this.tpManageStudentGrades.SuspendLayout();
@@ -308,8 +308,8 @@
             // 
             // tabPage4
             // 
-            this.tabPage4.Controls.Add(this.button5);
-            this.tabPage4.Controls.Add(this.dataGridView1);
+            this.tabPage4.Controls.Add(this.dataGridViewSpecializations);
+            this.tabPage4.Controls.Add(this.buttonAsignSpecializations);
             this.tabPage4.Controls.Add(this.label6);
             this.tabPage4.Controls.Add(this.label5);
             this.tabPage4.Controls.Add(this.label4);
@@ -324,22 +324,24 @@
             this.tabPage4.Text = "Specjalizacje studentów";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
-            // button5
+            // dataGridViewSpecializations
             // 
-            this.button5.Location = new System.Drawing.Point(32, 315);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(274, 68);
-            this.button5.TabIndex = 19;
-            this.button5.Text = "Przypisz";
-            this.button5.UseVisualStyleBackColor = true;
+            this.dataGridViewSpecializations.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewSpecializations.Location = new System.Drawing.Point(350, 46);
+            this.dataGridViewSpecializations.Name = "dataGridViewSpecializations";
+            this.dataGridViewSpecializations.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridViewSpecializations.Size = new System.Drawing.Size(646, 464);
+            this.dataGridViewSpecializations.TabIndex = 21;
             // 
-            // dataGridView1
+            // buttonAsignSpecializations
             // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(363, 45);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(676, 475);
-            this.dataGridView1.TabIndex = 18;
+            this.buttonAsignSpecializations.Location = new System.Drawing.Point(32, 315);
+            this.buttonAsignSpecializations.Name = "buttonAsignSpecializations";
+            this.buttonAsignSpecializations.Size = new System.Drawing.Size(274, 68);
+            this.buttonAsignSpecializations.TabIndex = 19;
+            this.buttonAsignSpecializations.Text = "Przypisz";
+            this.buttonAsignSpecializations.UseVisualStyleBackColor = true;
+            this.buttonAsignSpecializations.Click += new System.EventHandler(this.buttonAsignSpecializations_Click);
             // 
             // label6
             // 
@@ -871,7 +873,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownAlbumNumber)).EndInit();
             this.tabPage4.ResumeLayout(false);
             this.tabPage4.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewSpecializations)).EndInit();
             this.tabPage2.ResumeLayout(false);
             this.tcGradesPage.ResumeLayout(false);
             this.tpManageStudentGrades.ResumeLayout(false);
@@ -921,8 +923,7 @@
 
         // Kontrolki z tabPage4
         private System.Windows.Forms.TabPage tabPage4;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.Button buttonAsignSpecializations;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
@@ -972,6 +973,7 @@
         private System.Windows.Forms.TextBox txtAssignmentLog;
         private System.Windows.Forms.TabPage tpGroupsPreview;
         private System.Windows.Forms.DataGridView dgvGroupsPreview;
+        private System.Windows.Forms.DataGridView dataGridViewSpecializations;
         // --- KONIEC DEKLARACJI KONTROLEK DLA tabPage3 ---
     }
 }

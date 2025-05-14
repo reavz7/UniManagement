@@ -11,7 +11,7 @@ namespace UniManagement
 {
     public partial class Form1 : Form
     {
-        private string connectionString = "Data Source=FirstOne;Initial Catalog=UniManagement;Integrated Security=True;Encrypt=False";
+        private string connectionString = "Data Source=.;Initial Catalog=StudentManagement;Integrated Security=True;Encrypt=False";
         private SqlDataAdapter dataAdapter;
         private DataSet dataSet;
         private BindingSource bindingSource;
@@ -27,6 +27,11 @@ namespace UniManagement
         private const string studentPreferencesTableName = "StudentPreferences";
         private const string tempAssignedSpecIdColName = "AssignedSpecializationID_Temp";
         private const string tempAssignmentStatusColName = "AssignmentStatus_Temp";
+
+        private SqlDataAdapter specializationsComboBoxAdapter;
+        private DataTable specializationsDataTable;
+        private SqlDataAdapter studentPreferencesDataAdapter;
+        private int currentSelectedStudentID = -1;
 
 
         private SqlDataAdapter studentsForGradesComboBoxAdapter;
@@ -51,6 +56,8 @@ namespace UniManagement
             SetupDataBindings();
             InitializeGradesRelatedComponents();
             SetupGradesTabEventHandlers();
+            ConfigureSpecializationsTab();
+            InitializeAllDataGridViews();
         }
 
         private void InitializeDataComponents()
@@ -106,6 +113,7 @@ namespace UniManagement
             }
         }
 
+
         private void SetupDataBindings()
         {
             try
@@ -154,20 +162,41 @@ namespace UniManagement
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(textBoxName.Text) || string.IsNullOrWhiteSpace(textBoxSurname.Text) || string.IsNullOrWhiteSpace(textBoxEmail.Text) || string.IsNullOrWhiteSpace(numericUpDownAlbumNumber.Text))
-                { MessageBox.Show("Proszę wypełnić wszystkie wymagane pola!", "Uwaga", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
+                if (string.IsNullOrWhiteSpace(textBoxName.Text) ||
+                    string.IsNullOrWhiteSpace(textBoxSurname.Text) ||
+                    string.IsNullOrWhiteSpace(textBoxEmail.Text) ||
+                    string.IsNullOrWhiteSpace(numericUpDownAlbumNumber.Text))
+                {
+                    MessageBox.Show("Proszę wypełnić wszystkie wymagane pola!", "Uwaga",
+                                  MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
                 string albumNumber = numericUpDownAlbumNumber.Text;
                 if (!ValidateAlbumNumber(albumNumber))
-                { MessageBox.Show("Numer albumu musi składać się dokładnie z 6 cyfr!", "Błąd walidacji", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
+                {
+                    MessageBox.Show("Numer albumu musi składać się dokładnie z 6 cyfr!",
+                                  "Błąd walidacji", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
                 string email = textBoxEmail.Text;
                 if (!ValidateEmail(email))
-                { MessageBox.Show("Podany adres email jest nieprawidłowy. Musi zawierać znak @ oraz kropkę!", "Błąd walidacji", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
-                if (AlbumNumberExists(albumNumber))
-                { MessageBox.Show("Student o podanym numerze albumu już istnieje w bazie danych!", "Duplikat", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
-                if (EmailExists(email))
-                { MessageBox.Show("Student o podanym adresie email już istnieje w bazie danych!", "Duplikat", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
+                {
+                    MessageBox.Show("Podany adres email jest nieprawidłowy. Musi zawierać znak @ oraz kropkę!",
+                                  "Błąd walidacji", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
-                DataRow newRow = dataSet.Tables["Studenci"].NewRow(); // Poprawka nazwy tabeli
+                DataRow newRow = dataSet.Tables["Studenci"].NewRow();
+
+                // Since StudentID is likely an auto-increment field in the database,
+                // we need to either provide a temporary value or set it to auto-increment in the DataSet
+
+                // OPTION 1: Set StudentID to a temporary negative value
+                // The database will ignore this and use its auto-increment value
+                newRow["StudentID"] = -1;  // Temporary value that will be replaced by DB auto-increment
+
                 newRow["NumerAlbumu"] = albumNumber;
                 newRow["Imie"] = textBoxName.Text;
                 newRow["Nazwisko"] = textBoxSurname.Text;
@@ -175,16 +204,21 @@ namespace UniManagement
                 newRow["SpecjalizacjaID"] = DBNull.Value;
                 newRow["SredniaOcenKwalifikacyjna"] = DBNull.Value;
                 newRow["StatusKwalifikacji"] = comboBoxStatus.SelectedItem?.ToString() ?? "Oczekujący";
-                dataSet.Tables["Studenci"].Rows.Add(newRow); // Poprawka nazwy tabeli
-                dataAdapter.Update(dataSet, "Studenci"); // Poprawka nazwy tabeli
+
+                dataSet.Tables["Studenci"].Rows.Add(newRow);
+                dataAdapter.Update(dataSet, "Studenci");
                 LoadData();
-                MessageBox.Show("Student został dodany pomyślnie!", "Sukces", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                MessageBox.Show("Student został dodany pomyślnie!", "Sukces",
+                              MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ClearFields();
             }
             catch (Exception ex)
-            { MessageBox.Show($"Błąd podczas dodawania studenta: {ex.Message}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+            {
+                MessageBox.Show($"Błąd podczas dodawania studenta: {ex.Message}", "Błąd",
+                              MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
-
         private void button3_Click_1(object sender, EventArgs e) // Edycja
         {
             try
@@ -202,10 +236,7 @@ namespace UniManagement
                 string email = textBoxEmail.Text;
                 if (!ValidateEmail(email))
                 { MessageBox.Show("Podany adres email jest nieprawidłowy. Musi zawierać znak @ oraz kropkę!", "Błąd walidacji", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
-                if (AlbumNumberExists(albumNumber, studentId))
-                { MessageBox.Show("Student o podanym numerze albumu już istnieje w bazie danych!", "Duplikat", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
-                if (EmailExists(email, studentId))
-                { MessageBox.Show("Student o podanym adresie email już istnieje w bazie danych!", "Duplikat", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
+
 
                 bindingSource.EndEdit();
                 dataAdapter.Update(dataSet, "Studenci"); // Poprawka nazwy tabeli
@@ -696,6 +727,10 @@ namespace UniManagement
                 MessageBox.Show($"Błąd podczas inicjalizacji komponentów dla zakładki ocen: {ex.Message}", "Błąd inicjalizacji", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+        private void InitializeAllDataGridViews()
+        {
+            InitializeSpecializationsStudentsDataGridView();
+        }
 
         private void SetupGradesTabEventHandlers()
         {
@@ -908,6 +943,199 @@ namespace UniManagement
                 }
             }
         }
+        private void InitializeSpecializationComponents()
+        {
+            try
+            {
+                // Inicjalizacja adaptera dla specjalizacji do ComboBox-ów
+                specializationsComboBoxAdapter = new SqlDataAdapter(
+                    "SELECT SpecjalizacjaID, NazwaSpecjalizacji FROM Specjalizacje ORDER BY NazwaSpecjalizacji",
+                    connectionString);
+
+                specializationsDataTable = new DataTable("SpecjalizacjeComboBox");
+                specializationsComboBoxAdapter.Fill(specializationsDataTable);
+
+                // Konfiguracja ComboBox-ów na specjalizacje
+                comboBoxSpecialization1.DisplayMember = "NazwaSpecjalizacji";
+                comboBoxSpecialization1.ValueMember = "SpecjalizacjaID";
+                comboBoxSpecialization1.DataSource = specializationsDataTable.Copy();
+
+                comboBoxSpecialization2.DisplayMember = "NazwaSpecjalizacji";
+                comboBoxSpecialization2.ValueMember = "SpecjalizacjaID";
+                comboBoxSpecialization2.DataSource = specializationsDataTable.Copy();
+
+                comboBoxSpecialization3.DisplayMember = "NazwaSpecjalizacji";
+                comboBoxSpecialization3.ValueMember = "SpecjalizacjaID";
+                comboBoxSpecialization3.DataSource = specializationsDataTable.Copy();
+
+                // Adapter dla danych preferencji studentów
+                studentPreferencesDataAdapter = new SqlDataAdapter(
+                    "SELECT PreferencjaID, StudentID, SpecjalizacjaID, Priorytet FROM PreferencjeStudentow",
+                    connectionString);
+
+                SqlCommandBuilder preferencesCommandBuilder = new SqlCommandBuilder(studentPreferencesDataAdapter);
+                studentPreferencesDataAdapter.InsertCommand = preferencesCommandBuilder.GetInsertCommand();
+                studentPreferencesDataAdapter.UpdateCommand = preferencesCommandBuilder.GetUpdateCommand();
+                studentPreferencesDataAdapter.DeleteCommand = preferencesCommandBuilder.GetDeleteCommand();
+
+                // Dodaj obsługę zdarzenia dla DataGridView studentów
+                studentsDataGridView.SelectionChanged += StudentsDataGridView_SelectionChanged;
+
+                AppendToLog("Moduł specjalizacji zainicjalizowany pomyślnie.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Błąd inicjalizacji komponentów specjalizacji: {ex.Message}", "Błąd",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                AppendToLog($"BŁĄD inicjalizacji specjalizacji: {ex.Message}");
+            }
+        }
+        private void ConfigureSpecializationsTab()
+        {
+            InitializeSpecializationComponents();
+            LoadStudentPreferences();
+        }
+
+        private void StudentsDataGridView_SelectionChanged(object sender, EventArgs e)
+        {
+            if (studentsDataGridView.CurrentRow != null)
+            {
+                DataRowView selectedRow = (DataRowView)studentsDataGridView.CurrentRow.DataBoundItem;
+                if (selectedRow != null)
+                {
+                    currentSelectedStudentID = Convert.ToInt32(selectedRow["StudentID"]);
+                    LoadStudentPreferences();
+                }
+            }
+        }
+
+        private void LoadStudentPreferences()
+        {
+            try
+            {
+                if (currentSelectedStudentID <= 0)
+                {
+                    ClearPreferencesComboBoxes();
+                    return;
+                }
+
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    // Pobierz preferencje studenta
+                    string query = "SELECT SpecjalizacjaID, Priorytet FROM PreferencjeStudentow " +
+                                   "WHERE StudentID = @StudentID ORDER BY Priorytet";
+
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@StudentID", currentSelectedStudentID);
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        Dictionary<int, int> preferences = new Dictionary<int, int>();
+
+                        while (reader.Read())
+                        {
+                            int specID = reader.GetInt32(0);
+                            int priority = reader.GetInt32(1);
+                            preferences[priority] = specID;
+                        }
+
+                        ClearPreferencesComboBoxes();
+
+                        // Ustaw preferencje w odpowiednich ComboBox-ach
+                        if (preferences.ContainsKey(1))
+                            comboBoxSpecialization1.SelectedValue = preferences[1];
+
+                        if (preferences.ContainsKey(2))
+                            comboBoxSpecialization2.SelectedValue = preferences[2];
+
+                        if (preferences.ContainsKey(3))
+                            comboBoxSpecialization3.SelectedValue = preferences[3];
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Błąd podczas wczytywania preferencji studenta: {ex.Message}",
+                    "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ClearPreferencesComboBoxes()
+        {
+            comboBoxSpecialization1.SelectedIndex = -1;
+            comboBoxSpecialization2.SelectedIndex = -1;
+            comboBoxSpecialization3.SelectedIndex = -1;
+        }
+
+   
+
+        private void InitializeSpecializationsStudentsDataGridView()
+        {
+            try
+            {
+                dataGridViewSpecializations.AutoGenerateColumns = false;
+                dataGridViewSpecializations.Columns.Clear();
+
+                DataGridViewTextBoxColumn idColumn = new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "StudentID",
+                    HeaderText = "ID",
+                    ReadOnly = true,
+                    Width = 50
+                };
+                dataGridViewSpecializations.Columns.Add(idColumn);
+
+                DataGridViewTextBoxColumn albumColumn = new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "NumerAlbumu",
+                    HeaderText = "Nr albumu",
+                    Width = 100
+                };
+                dataGridViewSpecializations.Columns.Add(albumColumn);
+
+                DataGridViewTextBoxColumn nameColumn = new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "Imie",
+                    HeaderText = "Imię",
+                    Width = 120
+                };
+                dataGridViewSpecializations.Columns.Add(nameColumn);
+
+                DataGridViewTextBoxColumn surnameColumn = new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "Nazwisko",
+                    HeaderText = "Nazwisko",
+                    Width = 150
+                };
+                dataGridViewSpecializations.Columns.Add(surnameColumn);
+
+                DataGridViewTextBoxColumn avgColumn = new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "SredniaOcenKwalifikacyjna",
+                    HeaderText = "Średnia ocen",
+                    Width = 100
+                };
+                dataGridViewSpecializations.Columns.Add(avgColumn);
+
+                DataGridViewTextBoxColumn statusColumn = new DataGridViewTextBoxColumn
+                {
+                    DataPropertyName = "StatusKwalifikacji",
+                    HeaderText = "Status kwalifikacji",
+                    Width = 150
+                };
+                dataGridViewSpecializations.Columns.Add(statusColumn);
+
+                dataGridViewSpecializations.DataSource = bindingSource;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Błąd inicjalizacji tabeli studentów na zakładce specjalizacji: {ex.Message}",
+                    "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
 
         private void BtnAddGrade_Click(object sender, EventArgs e)
         {
@@ -1113,6 +1341,135 @@ namespace UniManagement
         {
             LoadData();
         }
+
+        private void buttonAsignSpecializations_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (currentSelectedStudentID <= 0)
+                {
+                    MessageBox.Show("Proszę wybrać studenta z listy.", "Brak zaznaczenia",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (comboBoxSpecialization1.SelectedIndex == -1 &&
+                    comboBoxSpecialization2.SelectedIndex == -1 &&
+                    comboBoxSpecialization3.SelectedIndex == -1)
+                {
+                    MessageBox.Show("Proszę wybrać przynajmniej jedną specjalizację.",
+                        "Brak wyboru", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Sprawdź duplikaty w wyborach
+                HashSet<int> selectedSpecIds = new HashSet<int>();
+
+                if (comboBoxSpecialization1.SelectedIndex != -1)
+                {
+                    int specId = (int)comboBoxSpecialization1.SelectedValue;
+                    selectedSpecIds.Add(specId);
+                }
+
+                if (comboBoxSpecialization2.SelectedIndex != -1)
+                {
+                    int specId = (int)comboBoxSpecialization2.SelectedValue;
+                    if (selectedSpecIds.Contains(specId))
+                    {
+                        MessageBox.Show("Nie można wybrać tej samej specjalizacji więcej niż raz.",
+                            "Duplikat wyboru", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    selectedSpecIds.Add(specId);
+                }
+
+                if (comboBoxSpecialization3.SelectedIndex != -1)
+                {
+                    int specId = (int)comboBoxSpecialization3.SelectedValue;
+                    if (selectedSpecIds.Contains(specId))
+                    {
+                        MessageBox.Show("Nie można wybrać tej samej specjalizacji więcej niż raz.",
+                            "Duplikat wyboru", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    selectedSpecIds.Add(specId);
+                }
+
+                // Usuń istniejące preferencje
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    string deleteQuery = "DELETE FROM PreferencjeStudentow WHERE StudentID = @StudentID";
+                    SqlCommand deleteCmd = new SqlCommand(deleteQuery, conn);
+                    deleteCmd.Parameters.AddWithValue("@StudentID", currentSelectedStudentID);
+                    deleteCmd.ExecuteNonQuery();
+
+                    // Dodaj nowe preferencje
+                    DataTable preferencesTable = new DataTable();
+                    preferencesTable.Columns.Add("StudentID", typeof(int));
+                    preferencesTable.Columns.Add("SpecjalizacjaID", typeof(int));
+                    preferencesTable.Columns.Add("Priorytet", typeof(int));
+
+                    if (comboBoxSpecialization1.SelectedIndex != -1)
+                    {
+                        DataRow row = preferencesTable.NewRow();
+                        row["StudentID"] = currentSelectedStudentID;
+                        row["SpecjalizacjaID"] = comboBoxSpecialization1.SelectedValue;
+                        row["Priorytet"] = 1;
+                        preferencesTable.Rows.Add(row);
+                    }
+
+                    if (comboBoxSpecialization2.SelectedIndex != -1)
+                    {
+                        DataRow row = preferencesTable.NewRow();
+                        row["StudentID"] = currentSelectedStudentID;
+                        row["SpecjalizacjaID"] = comboBoxSpecialization2.SelectedValue;
+                        row["Priorytet"] = 2;
+                        preferencesTable.Rows.Add(row);
+                    }
+
+                    if (comboBoxSpecialization3.SelectedIndex != -1)
+                    {
+                        DataRow row = preferencesTable.NewRow();
+                        row["StudentID"] = currentSelectedStudentID;
+                        row["SpecjalizacjaID"] = comboBoxSpecialization3.SelectedValue;
+                        row["Priorytet"] = 3;
+                        preferencesTable.Rows.Add(row);
+                    }
+
+                    // Dodaj nowe preferencje do bazy danych
+                    using (SqlBulkCopy bulkCopy = new SqlBulkCopy(conn))
+                    {
+                        bulkCopy.DestinationTableName = "PreferencjeStudentow";
+                        bulkCopy.ColumnMappings.Add("StudentID", "StudentID");
+                        bulkCopy.ColumnMappings.Add("SpecjalizacjaID", "SpecjalizacjaID");
+                        bulkCopy.ColumnMappings.Add("Priorytet", "Priorytet");
+                        bulkCopy.WriteToServer(preferencesTable);
+                    }
+
+                    // Ustaw status studenta na "W trakcie rozpatrywania"
+                    string updateStudentQuery = "UPDATE Studenci SET StatusKwalifikacji = 'W trakcie rozpatrywania' " +
+                                              "WHERE StudentID = @StudentID";
+                    SqlCommand updateCmd = new SqlCommand(updateStudentQuery, conn);
+                    updateCmd.Parameters.AddWithValue("@StudentID", currentSelectedStudentID);
+                    updateCmd.ExecuteNonQuery();
+
+                    // Odśwież dane
+                    LoadData();
+                    MessageBox.Show("Preferencje specjalizacji zostały pomyślnie zapisane.",
+                        "Sukces", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    AppendToLog($"Zaktualizowano preferencje specjalizacji dla studenta ID: {currentSelectedStudentID}");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Błąd podczas zapisywania preferencji specjalizacji: {ex.Message}",
+                    "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                AppendToLog($"BŁĄD zapisywania preferencji: {ex.Message}");
+            }
+        }
     }
 
     // Formatka z przedmiotami i ocenami w Page 2
@@ -1161,7 +1518,8 @@ namespace UniManagement
             btnOk = new Button { Text = "OK", Location = new Point(170, 100), DialogResult = DialogResult.OK };
             btnCancel = new Button { Text = "Anuluj", Location = new Point(250, 100), DialogResult = DialogResult.Cancel };
 
-            btnOk.Click += (s, e) => {
+            btnOk.Click += (s, e) =>
+            {
                 if (cmbSubjects.SelectedValue != null)
                 {
                     SelectedSubjectId = (int)cmbSubjects.SelectedValue;
