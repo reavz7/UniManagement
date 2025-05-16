@@ -11,7 +11,7 @@ namespace UniManagement
 {
     public partial class Form1 : Form
     {
-        private string connectionString = "Data Source=.;Initial Catalog=StudentManagement;Integrated Security=True;Encrypt=False";
+        private string connectionString = "Data Source=.;Initial Catalog=UniManagement;Integrated Security=True;Encrypt=False";
         private SqlDataAdapter dataAdapter;
         private DataSet dataSet;
         private BindingSource bindingSource;
@@ -929,7 +929,7 @@ namespace UniManagement
                     System.Globalization.NumberStyles.Any,
                     System.Globalization.CultureInfo.InvariantCulture, out decimal gradeValue))
                 {
-                    decimal[] validGrades = { 3.0m, 3.5m, 4.0m, 4.5m, 5.0m };
+                    decimal[] validGrades = { 2.0m, 3.0m, 3.5m, 4.0m, 4.5m, 5.0m };
                     if (!validGrades.Contains(gradeValue))
                     {
                         dgvStudentGrades.Rows[e.RowIndex].ErrorText = "Nieprawidłowa ocena. Dopuszczalne: 2.0, 2.5,..., 5.0.";
