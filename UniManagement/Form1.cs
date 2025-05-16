@@ -11,7 +11,7 @@ namespace UniManagement
 {
     public partial class Form1 : Form
     {
-        private string connectionString = "Data Source=.;Initial Catalog=UniManagement;Integrated Security=True;Encrypt=False";
+        private string connectionString = "Data Source=KAMIL\\SQLEXPRESS;Initial Catalog=UniManagement;Integrated Security=True;Encrypt=False";
         private SqlDataAdapter dataAdapter;
         private DataSet dataSet;
         private BindingSource bindingSource;
@@ -189,13 +189,7 @@ namespace UniManagement
                 }
 
                 DataRow newRow = dataSet.Tables["Studenci"].NewRow();
-
-                // Since StudentID is likely an auto-increment field in the database,
-                // we need to either provide a temporary value or set it to auto-increment in the DataSet
-
-                // OPTION 1: Set StudentID to a temporary negative value
-                // The database will ignore this and use its auto-increment value
-                newRow["StudentID"] = -1;  // Temporary value that will be replaced by DB auto-increment
+                newRow["StudentID"] = -1; 
 
                 newRow["NumerAlbumu"] = albumNumber;
                 newRow["Imie"] = textBoxName.Text;
@@ -839,7 +833,6 @@ namespace UniManagement
                     }
                 }
 
-                // Poprawka dla Błędu 1: Konfiguracja AutoIncrement dla OcenaID
                 if (studentGradesDataTable.Columns.Contains("OcenaID"))
                 {
                     DataColumn ocenaIdCol = studentGradesDataTable.Columns["OcenaID"];
@@ -848,8 +841,6 @@ namespace UniManagement
                         ocenaIdCol.AutoIncrement = true;
                         ocenaIdCol.AutoIncrementSeed = -1;
                         ocenaIdCol.AutoIncrementStep = -1;
-                        // Upewnij się, że AllowDBNull jest false jeśli to klucz główny, AutoIncrement to załatwia
-                        // ocenaIdCol.AllowDBNull = false; // Usuń, jeśli AutoIncrement i PrimaryKey to ustawią
                     }
                     if (studentGradesDataTable.PrimaryKey.Length == 0 ||
                         (studentGradesDataTable.PrimaryKey.Length > 0 && studentGradesDataTable.PrimaryKey[0] != ocenaIdCol))
@@ -859,11 +850,9 @@ namespace UniManagement
                 }
 
 
-                // Poprawka dla Błędu 2: Konfiguracja adaptera do ZAPISU (studentSpecificGradesAdapter)
                 string crudQuery = "SELECT OcenaID, StudentID, PrzedmiotID, WartoscOceny FROM OcenyStudentow WHERE StudentID = @StudentID_CRUD";
                 studentSpecificGradesAdapter = new SqlDataAdapter();
 
-                // Utwórz SelectCommand z NOWYM obiektem SqlConnection
                 SqlCommand selectCmdForBuilder = new SqlCommand(crudQuery, new SqlConnection(connectionString));
                 selectCmdForBuilder.Parameters.AddWithValue("@StudentID_CRUD", studentId);
                 studentSpecificGradesAdapter.SelectCommand = selectCmdForBuilder;
@@ -947,7 +936,6 @@ namespace UniManagement
         {
             try
             {
-                // Inicjalizacja adaptera dla specjalizacji do ComboBox-ów
                 specializationsComboBoxAdapter = new SqlDataAdapter(
                     "SELECT SpecjalizacjaID, NazwaSpecjalizacji FROM Specjalizacje ORDER BY NazwaSpecjalizacji",
                     connectionString);
@@ -955,7 +943,6 @@ namespace UniManagement
                 specializationsDataTable = new DataTable("SpecjalizacjeComboBox");
                 specializationsComboBoxAdapter.Fill(specializationsDataTable);
 
-                // Konfiguracja ComboBox-ów na specjalizacje
                 comboBoxSpecialization1.DisplayMember = "NazwaSpecjalizacji";
                 comboBoxSpecialization1.ValueMember = "SpecjalizacjaID";
                 comboBoxSpecialization1.DataSource = specializationsDataTable.Copy();
@@ -968,7 +955,6 @@ namespace UniManagement
                 comboBoxSpecialization3.ValueMember = "SpecjalizacjaID";
                 comboBoxSpecialization3.DataSource = specializationsDataTable.Copy();
 
-                // Adapter dla danych preferencji studentów
                 studentPreferencesDataAdapter = new SqlDataAdapter(
                     "SELECT PreferencjaID, StudentID, SpecjalizacjaID, Priorytet FROM PreferencjeStudentow",
                     connectionString);
@@ -978,7 +964,6 @@ namespace UniManagement
                 studentPreferencesDataAdapter.UpdateCommand = preferencesCommandBuilder.GetUpdateCommand();
                 studentPreferencesDataAdapter.DeleteCommand = preferencesCommandBuilder.GetDeleteCommand();
 
-                // Dodaj obsługę zdarzenia dla DataGridView studentów
                 studentsDataGridView.SelectionChanged += StudentsDataGridView_SelectionChanged;
 
                 AppendToLog("Moduł specjalizacji zainicjalizowany pomyślnie.");
@@ -1023,7 +1008,6 @@ namespace UniManagement
                 {
                     conn.Open();
 
-                    // Pobierz preferencje studenta
                     string query = "SELECT SpecjalizacjaID, Priorytet FROM PreferencjeStudentow " +
                                    "WHERE StudentID = @StudentID ORDER BY Priorytet";
 
@@ -1043,7 +1027,6 @@ namespace UniManagement
 
                         ClearPreferencesComboBoxes();
 
-                        // Ustaw preferencje w odpowiednich ComboBox-ach
                         if (preferences.ContainsKey(1))
                             comboBoxSpecialization1.SelectedValue = preferences[1];
 
@@ -1246,14 +1229,12 @@ namespace UniManagement
             {
                 MessageBox.Show($"Błąd SQL ({sqlEx.Number}): {sqlEx.Message}\n{sqlEx.StackTrace}", "Błąd SQL", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 studentGradesDataTable.RejectChanges();
-                // Możesz chcieć ponownie załadować oceny, aby przywrócić stan z bazy danych
                 LoadStudentGrades(currentStudentId);
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Ogólny błąd zapisu ocen: {ex.Message}\n{ex.StackTrace}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 studentGradesDataTable.RejectChanges();
-                // Możesz chcieć ponownie załadować oceny
                 LoadStudentGrades(currentStudentId);
             }
         }
@@ -1362,7 +1343,6 @@ namespace UniManagement
                     return;
                 }
 
-                // Sprawdź duplikaty w wyborach
                 HashSet<int> selectedSpecIds = new HashSet<int>();
 
                 if (comboBoxSpecialization1.SelectedIndex != -1)
@@ -1395,7 +1375,6 @@ namespace UniManagement
                     selectedSpecIds.Add(specId);
                 }
 
-                // Usuń istniejące preferencje
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
@@ -1405,7 +1384,6 @@ namespace UniManagement
                     deleteCmd.Parameters.AddWithValue("@StudentID", currentSelectedStudentID);
                     deleteCmd.ExecuteNonQuery();
 
-                    // Dodaj nowe preferencje
                     DataTable preferencesTable = new DataTable();
                     preferencesTable.Columns.Add("StudentID", typeof(int));
                     preferencesTable.Columns.Add("SpecjalizacjaID", typeof(int));
@@ -1438,7 +1416,6 @@ namespace UniManagement
                         preferencesTable.Rows.Add(row);
                     }
 
-                    // Dodaj nowe preferencje do bazy danych
                     using (SqlBulkCopy bulkCopy = new SqlBulkCopy(conn))
                     {
                         bulkCopy.DestinationTableName = "PreferencjeStudentow";
@@ -1448,7 +1425,6 @@ namespace UniManagement
                         bulkCopy.WriteToServer(preferencesTable);
                     }
 
-                    // Ustaw status studenta na "W trakcie rozpatrywania"
                     string updateStudentQuery = "UPDATE Studenci SET StatusKwalifikacji = 'W trakcie rozpatrywania' " +
                                               "WHERE StudentID = @StudentID";
                     SqlCommand updateCmd = new SqlCommand(updateStudentQuery, conn);
